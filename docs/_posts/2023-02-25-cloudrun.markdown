@@ -5,6 +5,6 @@ date:   2023-02-25 17:25:17 -0800
 categories: jekyll update
 ---
 The [Perceptron App](https://aperceptron-cwilgtx4fa-uc.a.run.app) models two converging perceptrons with random weights and heviside step function activation. Input parameters are the number of inputs.
-[![image link](/assets/perceptron.png){: width="1000" }](https://aperceptron-cwilgtx4fa-uc.a.run.app)
+[![image link](/assets/perceptron.PNG){: width="1000" }](https://aperceptron-cwilgtx4fa-uc.a.run.app)
 
  
