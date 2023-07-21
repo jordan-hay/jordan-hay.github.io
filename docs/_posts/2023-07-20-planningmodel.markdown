@@ -4,8 +4,7 @@ title:  "Optimizing Workforce and Production Decisions: Linear Programming Aggre
 date:   2023-07-20 06:25:17 -0800
 categories: jekyll update
 ---
-Introduction
-===
+# Introduction
 In today's fast-paced and competitive business landscape, effective planning and decision-making are paramount to a company's success. Whether it's a manufacturing facility or a service-oriented organization, finding the balance between workforce capacity and production demands can be a challenging task. To address this critical need, Aggregate Planning Models use powerful linear programming optimization to streamline workforce and production decisions while minimizing monthly costs.
 Understanding the Aggregate Planning Model
 ===
