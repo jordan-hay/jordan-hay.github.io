@@ -6,7 +6,7 @@ categories: jekyll update
 ---
 ![image tooltip here](/assets/logistic.PNG){: width="500" }
 
-In the world of data science and machine learning, logistic regression is a fundamental and widely used algorithm for classification tasks. In this blog, we will explore the application of logistic regression in predicting whether an airline customer will make a phone purchase or not. We will dive into the code that performs data preprocessing, model fitting, and predictions, using Python and popular libraries such as pandas, scikit-learn, and statsmodels.
+In the world of data science and machine learning, logistic regression is a fundamental and widely used algorithm for classification tasks. In this blog, we will explore the application of logistic regression in predicting whether an airline customer will make a phone purchase or not [1]. We will dive into the code that performs data preprocessing, model fitting, and predictions, using Python and popular libraries such as pandas, scikit-learn, and statsmodels.
 
 # Understanding the Problem
 
@@ -167,7 +167,7 @@ In this snippet, we prepare the test data for predictions by inserting a column 
 
 # Conclusion
 
-Given a set of predictor variables \\(X_1, X_2, \ldots, X_n\\) and their corresponding coefficients \\(b_0, b_1, b_2, \ldots, b_n\\), the logistic regression model predicts the probability $p$ of the event occurring as:
+Given a set of predictor variables \\(X_1, X_2, \ldots, X_n\\) and their corresponding coefficients \\(b_0, b_1, b_2, \ldots, b_n\\), the logistic regression model predicts the probability \\(p\\) of the event occurring as:
 
 
 $$
@@ -187,4 +187,7 @@ Logit Function and Coefficients in Logistic Regression:
 $$\text{logit}(p) = \log\left(\frac{p}{1 - p}\right)$$
 
 $$\text{logit}(p) = b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n$$
- 
+
+# References
+
+[1] Data Mining for Business Analytics: Concepts, Techniques, and Applications in Python (First Edition) Galit Shmueli, Peter C. Bruce, Peter Gedeck, and Nitin R. Patel (c) 2019 John Wiley & Sons, Inc. 
