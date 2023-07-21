@@ -167,7 +167,7 @@ In this snippet, we prepare the test data for predictions by inserting a column 
 
 # Conclusion
 
-Given a set of predictor variables \$$X_1, X_2, \ldots, X_n$$ and their corresponding coefficients \$$b_0, b_1, b_2, \ldots, b_n\$$, the logistic regression model predicts the probability $p$ of the event occurring as:
+Given \\( sin(x^2) \\) a set of predictor variables \$$X_1, X_2, \ldots, X_n\$$ and their corresponding coefficients \$$b_0, b_1, b_2, \ldots, b_n\$$, the logistic regression model predicts the probability $p$ of the event occurring as:
 
 
 $$
