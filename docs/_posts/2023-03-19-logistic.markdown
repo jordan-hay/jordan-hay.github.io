@@ -1,0 +1,190 @@
+---
+layout: post
+title:  "Mastering Logistic Regression: Unraveling Probability, Odds, and the Logit Function"
+date:   2023-03-19 06:25:17 -0800
+categories: jekyll update
+---
+![image tooltip here](/assets/logistic.PNG){: width="500" }
+
+In the world of data science and machine learning, logistic regression is a fundamental and widely used algorithm for classification tasks. In this blog, we will explore the application of logistic regression in predicting whether an airline customer will make a phone purchase or not. We will dive into the code that performs data preprocessing, model fitting, and predictions, using Python and popular libraries such as pandas, scikit-learn, and statsmodels.
+
+# Understanding the Problem
+
+Our dataset contains information about airline customers, including various features that can be used to predict whether a customer will make a phone purchase. The target variable, 'Phone_sale', is binary, representing whether the customer made a phone purchase (1) or not (0).
+
+# Data Preprocessing
+
+Before we delve into model building, we need to preprocess the data to ensure it is suitable for logistic regression. Let's take a look at the code that accomplishes this:
+
+```python
+# Importing necessary libraries
+import gdown
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.linear_model import LogisticRegression
+import statsmodels.api as sm
+```
+First, we import the necessary libraries, including pandas, numpy, and various modules from scikit-learn for data preprocessing and logistic regression.
+
+```python
+# Downloading and loading the dataset
+url = 'https://github.com/gedeck/dmba/raw/master/src/dmba/csvFiles/EastWestAirlinesNN.csv.gz'
+gdown.download(url, 'EastWestAirlinesNN.csv.gz', quiet=True)
+!gunzip EastWestAirlinesNN.csv.gz
+
+# Making the dataframe
+df = pd.read_csv('EastWestAirlinesNN.csv')
+
+# Handling missing values
+df = df.dropna()
+```
+
+In the next snippet, we download the dataset from the provided URL using gdown and load it into a pandas DataFrame. We then handle missing values by dropping rows with missing data.
+
+```python
+# Setting types to categorical
+df = df.astype(dict(zip(df[df.columns[np.where(df.nunique().values==2)]],['category']*1000)))
+```
+We set the data types of certain columns as categorical, assuming that any column with only two unique values is categorical.
+
+```python
+# Creating the inputs and output
+X_df = df.drop(['ID#', 'Phone_sale'], axis=1)
+Y_df = df[['Phone_sale']]
+```
+
+Next, we create the input features (X_df) by dropping the 'ID#' and 'Phone_sale' columns from the DataFrame, and we extract the target variable 'Phone_sale' (Y_df).
+
+```python
+# Dummy variables for categorical features
+X_df = pd.get_dummies(X_df, drop_first=True)  # Create dummy variables for categorical features
+```
+We generate dummy variables for the categorical features in X_df using the get_dummies function from pandas. The drop_first=True parameter is used to avoid multicollinearity.
+
+```python
+# Scaling numerical features
+numerical_columns = X_df.columns.difference(X_df.select_dtypes('uint8').columns)
+ct = ColumnTransformer([
+    ('num', StandardScaler(), numerical_columns),
+    ('cat', MinMaxScaler(), X_df.select_dtypes('uint8').columns),
+])
+X_dfs = ct.fit_transform(X_df)
+X_dfs = pd.DataFrame(X_dfs, columns = X_df.columns)
+```
+We identify the numerical features and categorical features based on their data types. We then apply scaling to the numerical features using StandardScaler and MinMaxScaler for the categorical features through the ColumnTransformer.
+
+```python
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_dfs, Y_df, random_state=1, test_size=0.4)
+```
+Finally, we split the preprocessed data into training and testing sets using train_test_split from scikit-learn. The training set contains 60% of the data, and the testing set contains 40% of the data.
+
+# Model Fitting and Analysis
+
+With the preprocessed data, we are now ready to fit a logistic regression model to the training data and analyze the results:
+
+```python
+# Fit the logistic regression model to the training data
+Xlog2 = sm.add_constant(X_train)
+logr_model = sm.Logit(y_train.values, Xlog2)
+logr_fit = logr_model.fit()
+print(logr_fit.summary())
+```
+In this snippet, we use statsmodels to fit a logistic regression model to the training data. We add a constant column to the training data, which is required for the logistic regression model. Then, we create the logistic regression model using Logit from statsmodels and fit it to the data using the fit method.
+
+```python
+# Look at the coefficients and constant
+coefs = logr_fit.params
+coefs
+```
+We extract the coefficients and the constant term from the fitted logistic regression model.
+
+```python
+# Calculate the odds ratios
+odds_ratios = np.exp(coefs)[1:]
+odds_ratios
+```
+Next, we calculate the odds ratios, which represent the multiplicative change in odds for a one-unit increase in the predictor variable.
+
+```python
+# Calculate the chances
+odds_reference = np.exp(coefs[0])
+chances = odds_ratios * odds_reference
+chances
+```
+Here, we calculate the chances, which are the odds of the event occurring (phone sale) compared to the odds of the event not occurring (no phone sale).
+
+```python
+# Calculate the probabilities from the chances
+probabilities = chances / (1 + chances)
+probabilities
+```
+We convert the chances into probabilities, which represent the likelihood of a customer making a phone sale.
+
+```python
+# Calculate chances from probabilities
+probabilities / (1 - probabilities)
+```
+In this snippet, we calculate the chances from the probabilities, demonstrating the reversibility of the conversion.
+
+```python
+# Look at the p-values
+pvalues = dict(logr_fit.pvalues[1:])
+pvalues
+```
+Finally, we extract the p-values from the fitted model to assess the statistical significance of each predictor variable.
+
+# Using scikit-learn for Logistic Regression
+
+Next, we use scikit-learn to fit a logistic regression model and make predictions:
+
+```python
+# Use scikit-learn for logistic regression
+clf = LogisticRegression(random_state=0).fit(X_train, y_train.values.ravel())
+```
+In this section, we use scikit-learn's LogisticRegression class to fit the logistic regression model to the training data.
+
+```python
+# Look at the model parameters
+w = np.concatenate((clf.intercept_, clf.coef_.ravel()))[:, np.newaxis]
+w
+```
+We obtain the model parameters, including the intercept and coefficients, which determine the decision boundary.
+
+```python
+# Prepare test data for predictions
+X_test.insert(0, 'ones', 1)
+odds = np.exp(X_test.values @ w)
+X_test = X_test.drop(['ones'], axis=1)
+preds = odds / (1 + odds)
+print(odds)
+print(preds)
+```
+In this snippet, we prepare the test data for predictions by inserting a column of ones as the intercept. Then, we calculate the odds and convert them
+
+# Conclusion
+
+Given a set of predictor variables $X_1, X_2, \ldots, X_n$ and their corresponding coefficients $b_0, b_1, b_2, \ldots, b_n$, the logistic regression model predicts the probability $p$ of the event occurring as:
+
+
+$
+p = \frac{1}{1 + e^{-(b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n)}} = \frac{e^{b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n}}{1 + e^{b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n}}=\frac{\text{odds}}{1+\text{odds}}
+$
+
+Probability:
+
+$p$
+
+Odds:
+
+$\text{odds} = \frac{p}{1 - p}$
+
+Logit Function and Coefficients in Logistic Regression:
+
+$\text{logit}(p) = \log\left(\frac{p}{1 - p}\right)$
+
+$\text{logit}(p) = b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n$
+ 

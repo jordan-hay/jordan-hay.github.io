@@ -76,7 +76,8 @@ x = np.array([1.0, 2.0, 3.0])
 u = x.copy()        # This creates a copy of x
 u[0] = 100.0        # This will not affect x[0]
 ```
-Equally Spaced Numbers with linspace()
+# Equally Spaced Numbers with linspace()
+
 NumPy's linspace() function generates arrays of evenly spaced numbers:
 
 
