@@ -167,24 +167,24 @@ In this snippet, we prepare the test data for predictions by inserting a column 
 
 # Conclusion
 
-Given a set of predictor variables $X_1, X_2, \ldots, X_n$ and their corresponding coefficients $b_0, b_1, b_2, \ldots, b_n$, the logistic regression model predicts the probability $p$ of the event occurring as:
+Given a set of predictor variables \$$X_1, X_2, \ldots, X_n\$$ and their corresponding coefficients \$$b_0, b_1, b_2, \ldots, b_n\$$, the logistic regression model predicts the probability $p$ of the event occurring as:
 
 
-$
+$$
 p = \frac{1}{1 + e^{-(b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n)}} = \frac{e^{b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n}}{1 + e^{b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n}}=\frac{\text{odds}}{1+\text{odds}}
-$
+$$	
 
 Probability:
 
-$p$
+$$p$$
 
 Odds:
 
-$\text{odds} = \frac{p}{1 - p}$
+$$\text{odds} = \frac{p}{1 - p}$$
 
 Logit Function and Coefficients in Logistic Regression:
 
-$\text{logit}(p) = \log\left(\frac{p}{1 - p}\right)$
+$$\text{logit}(p) = \log\left(\frac{p}{1 - p}\right)$$
 
-$\text{logit}(p) = b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n$
+$$\text{logit}(p) = b_0 + b_1 \cdot X_1 + b_2 \cdot X_2 + \ldots + b_n \cdot X_n$$
  
