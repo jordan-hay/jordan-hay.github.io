@@ -7,7 +7,8 @@ categories: jekyll update
 Introduction
 ===
 In today's fast-paced and competitive business landscape, effective planning and decision-making are paramount to a company's success. Whether it's a manufacturing facility or a service-oriented organization, finding the balance between workforce capacity and production demands can be a challenging task. To address this critical need, Aggregate Planning Models use powerful linear programming optimization to streamline workforce and production decisions while minimizing monthly costs.
-##Understanding the Aggregate Planning Model
+Understanding the Aggregate Planning Model
+===
 The Aggregate Planning Model is a cutting-edge solution that integrates sophisticated Linear Programming techniques to help businesses optimize their workforce and production strategies. Linear Programming is a mathematical method used to determine the best outcome in a situation where there are multiple variables and constraints.
 Key Features
 ===
