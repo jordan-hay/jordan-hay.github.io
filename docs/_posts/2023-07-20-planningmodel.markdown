@@ -22,6 +22,7 @@ Using the Aggregate Planning Model is simple and user-friendly. After inputting 
 -	**Efficient Resource Allocation**: The model assists in allocating resources efficiently, ensuring that your workforce and production capacity are neither underutilized nor overburdened.
 -	**Enhanced Decision-Making**: With accurate forecasts and optimized plans at your disposal, you can make well-informed decisions to stay ahead of the competition.
 -	**Flexibility and Scalability**: The model is designed to adapt to changes in forecasted demands or production capacities, making it a valuable tool for businesses experiencing growth or market fluctuations.
+
 # Conclusion
 The Aggregate Planning Model offers an intelligent and efficient way to tackle the complexities of workforce and production decisions. By leveraging the power of Linear Programming, this spreadsheet model provides a minimum-cost solution while factoring in forecasted demands, workforce constraints, and production capacity. Embrace this innovative tool and pave the way for improved planning, streamlined operations, and sustainable growth in your business.
 If you are ready to optimize your workforce and production strategies, try out our Aggregate Planning Model today and witness the transformative impact it can have on your business. Efficient planning is the key to success in today's dynamic business landscape, and our model is the answer you've been looking for. Embrace the future of decision-making and stay one step ahead of the competition!
