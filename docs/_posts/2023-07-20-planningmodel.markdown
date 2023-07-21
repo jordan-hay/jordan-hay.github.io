@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Optimizing Workforce and Production Decisions: Linear Programming Aggregate Planning Spreadsheet Model"
-date:   2023-07-20 17:25:17 -0800
+date:   2023-07-20 06:25:17 -0800
 categories: jekyll update
 ---
 ##Introduction
