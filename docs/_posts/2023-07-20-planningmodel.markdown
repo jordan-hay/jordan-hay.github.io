@@ -14,6 +14,7 @@ The Aggregate Planning Model is a cutting-edge solution that integrates sophisti
 -	**Overtime and Production Capacity Constraints**: Overtime is an unavoidable reality in many industries, but excessive overtime can lead to decreased productivity and employee burnout. With our model, you can specify the maximum allowable overtime, striking a balance between meeting demands and maintaining a healthy work environment.
 -	**Monthly Costs**: Keeping track of monthly costs is crucial for any business. The Aggregate Planning Model takes into account labor costs, production costs, and overtime expenses to provide you with a comprehensive view of your financial commitments.
 -	**Minimum-Cost Solution**: The ultimate objective of our model is to deliver the most cost-effective plan possible. By optimizing the workforce and production decisions, the model automatically identifies the minimum-cost solution to meet forecasted demands, helping your business save valuable resources.
+
 # How It Works
 Using the Aggregate Planning Model is simple and user-friendly. After inputting your forecasted demands, workforce capacity, production capacity, overtime constraints, and associated costs, the model performs complex calculations in the background to determine the optimal plan. The results are presented in an easy-to-understand format, offering valuable insights for your decision-making process.
 # Benefits of the Aggregate Planning Model
