@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Optimizing Workforce and Production Decisions: Linear Programming Aggregate Planning Spreadsheet Model"
+title:  "Unraveling Tennis Ball Bounce Heights with Histograms: A Data Science Exploration"
 date:   2023-07-27 06:25:17 -0800
 categories: jekyll update
 ---
@@ -46,4 +46,60 @@ Using tennis balls and histograms for a statistics exercise can be a fun and eng
    - Summarize your findings from the data analysis and histogram. Discuss any trends or patterns observed in the bounce heights of the tennis balls.
 
 Remember to approach this exercise with curiosity and an open mind. It's a hands-on way to grasp the concept of histograms and gain insights into real-world data. Have fun with your statistics exercise using tennis balls and histograms!
- 
+
+# Spreadsheet
+
+|   | A           | B           | C      | D   | E   | F   |
+|---|-------------|-------------|--------|-----|-----|-----|
+| 1 | Tennis Ball | Height Wet  | Height Dry | Height | Wet | Dry |
+| 2 | 1           | 14.75       | 22.50      | 12     | 0   | 0   |
+| 3 | 2           | 16.00       | 24.75      | 14     | 0   | 0   |
+| 4 | 3           | 17.00       | 25.25      | 16     | 2   | 0   |
+| 5 | 4           | 17.25       | 26.50      | 18     | 4   | 0   |
+| 6 | 5           | 17.50       | 26.75      | 20     | 6   | 0   |
+| 7 | 6           | 17.60       | 26.76      | 22     | 4   | 0   |
+| 8 | 7           | 18.50       | 26.80      | 24     | 2   | 1   |
+| 9 | 8           | 18.80       | 26.90      | 26     | 0   | 2   |
+| 10| 9           | 19.00       | 27.50      | 28     | 0   | 10  |
+| 11| 10          | 19.25       | 27.60      | 30     | 0   | 5   |
+| 12| 11          | 19.50       | 27.60      | 32     | 0   | 0   |
+| 13| 12          | 19.50       | 28.00      | >32    | 0   | 0   |
+| 14| 13          | 20.50       | 28.25      |        |     |     |
+| 15| 14          | 20.50       | 28.30      |        |     |     |
+| 16| 15          | 21.50       | 28.50      |        |     |     |
+| 17| 16          | 21.70       | 29.00      |        |     |     |
+| 18| 17          | 22.50       | 29.20      |        |     |     |
+| 19| 18          | 23.25       | 27.00      |        |     |     |
+| 20| Min         | 14.75       | 22.5       |        |     |     |
+| 21| Max         | 23.25       | 29.2       |        |     |     |
+| 22| Mean        | 19.1        | 27.1       |        |     |     |
+| 23| SD          | 2.3         | 1.6        |        |     |     |
+
+
+The formula `=FREQUENCY(B2:B19, D2:D12)` in Microsoft Excel or Google Sheets is used to calculate the frequency distribution of values in a dataset. Let's break down the formula and understand its significance:
+
+- `B2:B19` represents the range of data values from which we want to calculate the frequency. In this case, it refers to the range of wet heights of tennis balls (B2 to B19).
+
+- `D2:D12` represents the array of bins (categories) into which the data values will be counted. In this case, it refers to the range of bins or categories for the histogram (D2 to D12).
+
+When you use this formula, it calculates how many values from the data fall into each specified bin. The output will be an array of frequencies corresponding to each bin.
+
+For example, suppose the wet heights of tennis balls (B2 to B19) are as follows: {14.75, 16.00, 17.00, 17.25, 17.50, 17.60, 18.50, 18.80, 19.00, 19.25, 19.50, 19.50, 20.50, 20.50, 21.50, 21.70, 22.50, 23.25}.
+
+And the bins for the histogram (D2 to D12) are as follows: {12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32}.
+
+Using the `FREQUENCY` formula, it will count how many values fall into each bin:
+
+- Bin 12-14: 0 (No values fall within this bin)
+- Bin 14-16: 2 (14.75, 16.00)
+- Bin 16-18: 4 (17.00, 17.25, 17.50, 17.60)
+- Bin 18-20: 6 (18.50, 18.80, 19.00, 19.25, 19.50, 19.50)
+- Bin 20-22: 4 (20.50, 20.50, 21.50, 21.70)
+- Bin 22-24: 2 (22.50, 23.25)
+- Bin 24-26: 0 (No values fall within this bin)
+- Bin 26-28: 0 (No values fall within this bin)
+- Bin 28-30: 0 (No values fall within this bin)
+- Bin 30-32: 0 (No values fall within this bin)
+- Bin >32: 0 (No values fall within this bin)
+
+This information is crucial for creating a histogram as it represents the distribution of tennis ball wet heights across various bins. The histogram will visualize how many data points fall into each range, helping to analyze the distribution pattern and identify any trends or patterns in the data. 
