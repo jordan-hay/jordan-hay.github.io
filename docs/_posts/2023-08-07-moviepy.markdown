@@ -6,7 +6,12 @@ categories: jekyll update
 ---
 ![image tooltip here](/assets/counter.PNG){: width="500" }
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Creating_Dynamic_Text_Video_Clips_with_Python_and_MoviePy.ipynb)
+
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Creating_Dynamic_Text_Video_Clips_with_Python_and_MoviePy.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
 
 
 
