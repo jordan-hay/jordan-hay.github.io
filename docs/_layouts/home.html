@@ -12,7 +12,8 @@ layout: default
   {%- if site.posts.size > 0 -%}
     <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
     <ul class="post-list">
-      {%- for post in site.categories[jekyll update]-%}
+      {%- for post in site.posts -%}
+{% if post.category != "secret"%}
 
       <li>
         {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
@@ -24,7 +25,7 @@ layout: default
         </h3>
         {%- if site.show_excerpts -%}
           {{ post.excerpt }}
-
+{% endif %}
         {%- endif -%}
       </li>
       {%- endfor -%}
