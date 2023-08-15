@@ -5,7 +5,7 @@ date:   2023-08-14 06:25:17 -0800
 categories: jekyll update
 ---
 
-#Introduction:
+Introduction:
 Within the world of academia, a distinct group of students emerges—the academic athletes, fueled by an insatiable passion for science. Among the multitude of platforms where these extraordinary minds shine, two stand out: the USA Biology Olympiad (USABO) and Science for Society affiliated science fairs. Together, these endeavors not only spotlight their academic prowess but also empower them to create meaningful societal impact through their scientific pursuits. Moreover, this dynamic pairing seamlessly bridges the pathway to distinguished events like the Science Talent Search (STS) and the International Science and Engineering Fair (ISEF), propelling these young minds towards recognition and innovation.
 
 1. The USA Biology Olympiad (USABO):
