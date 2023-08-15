@@ -6,7 +6,7 @@ exclude: true
 
 <ul>
   {%- for post in site.posts -%}
-  {% if post.hide == true %}
+  {% if post.secret == true %}
     <li>
     {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
     <span class="post-meta">{{ post.date | date: date_format }}</span>
