@@ -19,5 +19,16 @@ display: inline-block;
 position: relative;
 left: -10%;
 top: 5px;
+width: 30px;
+height: 30px;
+}
 
+.footer-col-3::before {
+content: url("/assets/facecircle.png");
+display: inline-block;
+position: relative;
+left: -25%;
+top: 50px;
+width: 60px;
+height: 60px;
 }
