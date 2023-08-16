@@ -35,7 +35,6 @@ height: 60px;
 
 .orange-background{
 display: inline-block; 
-background-color: #ff9800;
+background-color: orange;
 padding: 5px;
-
 }
