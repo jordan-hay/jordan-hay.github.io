@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Business for Acceleration
+menu: Business for Acceleration
 
 permalink: /Business/
 ---

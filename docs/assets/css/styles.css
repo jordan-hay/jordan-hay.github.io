@@ -32,3 +32,10 @@ top: 50px;
 width: 60px;
 height: 60px;
 }
+
+.orange-background{
+display: inline-block; 
+background-color: #ff9800;
+padding: 5px;
+
+}

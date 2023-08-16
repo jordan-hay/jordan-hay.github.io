@@ -1,10 +1,11 @@
 ---
 layout: page
 title: Biology for Amplification
+menu: Biology for Amplification
 
 permalink: /Biology/
 ---
-I'm a biochemist. I've been teaching Biology for over 20 years and am a published author and award-winning research mentor to students. Submit an [application for mentoring](https://www.buymeacoffee.com/b101lc).     
+I'm a biochemist. I've been teaching Biology for over 20 years and am a published author and award-winning research mentor to students.     
 HIGH SCHOOL BIOLOGY LESSONS | RESEARCH PROJECTS | AP BIOLOGY
 | RESEARCH INDEPENDENT STUDY| USABO | [EdTech Videos](https://www.youtube.com/@Biology101LearningCenter) | COnstraint-Based Reconstruction and Analysis (COBRA) | Flux Balance Analysis (FBA) | Metabolic Networks | Metabolic Engineering | MATLAB | Python
 
