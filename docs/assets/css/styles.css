@@ -12,3 +12,12 @@
   height: 100%;
   border: 0;
 }
+
+.site-title::before {
+content: url("/assets/logosmall.png");
+display: inline-block;
+position: relative;
+left: -10%;
+top: 5px;
+
+}

@@ -18,7 +18,7 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Jordan Hay LLC
+title: jordan-hay.github.io
 email: 
 description: Hi. I'm Jordan. I hold a Ph.D. from Cornell University and Bachelors of Science from University of California, Davis. With academia, industry, and government work experience, I serve clients in the areas of data science, computational science, biochemistry, biological sciences/engineering (AP Biology, USABO), business analytics, optimization modeling, simulation, accounting and finance.
 baseurl: "" # the subpath of your site, e.g. /blog
