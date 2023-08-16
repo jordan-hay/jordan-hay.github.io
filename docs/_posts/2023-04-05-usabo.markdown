@@ -2,7 +2,7 @@
 layout: post
 title:  "USA Biology Olympiad Playlist"
 date:   2023-04-06 17:25:17 -0800
-categories: jekyll update
+categories: jekyll update biology
 ---
 The 100-video [playlist](https://www.youtube.com/playlist?list=PLiu7xf0fPW_CSszIPhCR45uKPB0iSE5Xk) covers each question of the USA Biology Olympiad (USABO) Semifinal Exam June 24, 2020.[![image link](/assets/usabo.PNG){: width="1000" }](https://www.youtube.com/playlist?list=PLiu7xf0fPW_CSszIPhCR45uKPB0iSE5Xk)
 

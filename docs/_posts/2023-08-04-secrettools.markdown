@@ -2,9 +2,8 @@
 layout: post
 title:  "5 Secrets for Successful At-Home Research: Cutting-Edge Tools for Productivity and Exploration"
 date:   2023-08-04 06:25:17 -0800
-categories: secret
+categories: jekyll update
 category: secret
-secret: 1
 published: true
 ---
 

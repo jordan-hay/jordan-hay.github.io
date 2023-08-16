@@ -2,8 +2,8 @@
 layout: post
 title:  "Creating Dynamic Text Video Clips with Python and MoviePy"
 date:   2023-08-07 06:25:17 -0800
-categories: jekyll update secret
-category: secret
+categories: jekyll update
+category:
 ---
 ![image tooltip here](/assets/counter.PNG){: width="500" }
 

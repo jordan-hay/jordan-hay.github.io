@@ -2,7 +2,7 @@
 layout: post
 title:  "EdTech Video Production with Advanced Python Workflow"
 date:   2023-08-06 06:25:17 -0800
-categories: jekyll update
+categories: jekyll update biology
 ---
 
 {% include youtube.html id='sSwZL2KiFwQ' %}
