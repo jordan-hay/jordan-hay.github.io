@@ -1,0 +1,80 @@
+---
+layout: post
+title:  "Introducing IRIS: IRS's Modernized Online Portal for Filing Information Returns"
+date:   2023-08-20 05:25:17 -0800
+categories: jekyll update
+category:
+---
+
+**Mastering Power BI Time Intelligence with DAX: Navigating Row Context and Filter Context**
+
+In the realm of data analysis, time is more than just a dimension - it's a dynamic force that shapes insights and narratives. Power BI, Microsoft's robust business intelligence tool, empowers analysts to harness time's potential through sophisticated time intelligence functions. In this blog post, we'll embark on a journey through the intricacies of time intelligence in Power BI, exploring the concepts of row context and filter context that underpin its power.
+
+**Understanding Time Intelligence**
+
+Time intelligence is the art of analyzing data based on time-related dimensions. Whether you're examining sales trends, financial performance, or user engagement, time plays a pivotal role in revealing patterns, cycles, and anomalies. Power BI's suite of time intelligence functions equips analysts with tools to perform calculations that consider dates, periods, and comparisons across time.
+
+**Row Context: A Closer Look**
+
+In Power BI, row context refers to the context in which a formula is evaluated at the individual row level. Each row in your dataset holds a specific context that can influence calculations. For instance, when you create calculated columns or measures, they're computed based on the data present in the current row. This is particularly relevant when working with time-based data.
+
+**Filter Context: Shaping Perspectives**
+
+Filter context, on the other hand, determines the subset of data visible in a particular calculation. Filters can be applied to visuals, slicers, and report-level filters. When you're dealing with time intelligence, filter context becomes instrumental in narrowing down your analysis to specific time periods, like days, weeks, months, or years.
+
+**Navigating Time Intelligence with Examples**
+
+1. **Adding Account Type:**
+
+   Suppose your dataset includes columns `Date`, `Account`, `Account Number`, and `Amount`. To add an account type based on the account numbers, you can use this DAX code for a calculated column:
+   
+   ```DAX
+   Account Type = 
+   SWITCH(
+       TRUE(),
+       Table[Account Number] >= 100 AND Table[Account Number] < 200, "Assets",
+       Table[Account Number] >= 200 AND Table[Account Number] < 300, "Liabilities",
+       Table[Account Number] >= 300 AND Table[Account Number] < 400, "Owner's Equity",
+       Table[Account Number] >= 400 AND Table[Account Number] < 500, "Revenue",
+       Table[Account Number] >= 500, "Expenses"
+   )
+   ```
+
+2. **Creating a Calculated Table for Account Types:**
+
+   To create a calculated table summarizing account types and their total amounts, use this DAX code:
+   
+   ```DAX
+   Account Type Summary = 
+   SUMMARIZE(
+       Table,
+       Table[Account Type],
+       "Total Amount", SUM(Table[Amount])
+   )
+   ```
+
+3. **Total Amount Measure:**
+
+   To calculate the total amount across all rows, use this DAX measure:
+   
+   ```DAX
+   Total Amount = SUM(Table[Amount])
+   ```
+
+4. **YTD Amount Measure:**
+
+   To calculate the Year-to-Date (YTD) amount using the TOTALYTD function with a Date table, the DAX measure would look like this:
+   
+   ```DAX
+   YTD Amount = TOTALYTD([Total Amount], Date[Date])
+   ```
+
+**Achieving Mastery: Combining Row and Filter Context**
+
+The true power of time intelligence emerges when you harness both row context and filter context effectively. Calculations that consider individual rows while respecting applied filters provide a comprehensive view of trends, outliers, and correlations.
+
+In Power BI, understanding the interplay between row context and filter context allows you to craft compelling visuals, accurate measures, and insightful reports. By skillfully applying time intelligence functions, you illuminate the path to informed decision-making, enabling stakeholders to seize opportunities and mitigate challenges in a rapidly changing world.
+
+**Unlock Time's Secrets with Power BI's Time Intelligence**
+
+In the realm of business analytics, time is the thread that weaves together the story of your data. Power BI's time intelligence functions empower you to unravel that story, exploring past, present, and future trends with precision and clarity. By mastering the delicate dance between row context and filter context, you'll chart a course towards data-driven insights that drive success in every corner of your organization. 
