@@ -1,0 +1,163 @@
+---
+layout: post
+title:  "Building Conversational AI with Transformers: A Practical Example"
+date:   2023-08-20 17:25:17 -0800
+categories: jekyll update
+category:
+---
+
+
+In today's rapidly evolving technological landscape, artificial intelligence continues to transform various aspects of our lives. One remarkable manifestation of AI is conversational AI, which allows machines to interact with humans in natural language. In this blog post, we'll delve into the world of conversational AI using the powerful **transformers** library and explore its capabilities through a hands-on example.
+
+## Introduction to Transformers and Hugging Face
+
+Before we dive into the practical example, let's introduce the key tools we'll be using: the **transformers** library and the Hugging Face model hub. **Transformers** is an open-source library developed by Hugging Face that provides easy access to state-of-the-art natural language processing (NLP) models. The Hugging Face model hub hosts pre-trained models that can be fine-tuned for various NLP tasks, including text generation.
+
+## Setting Up the Environment
+
+To get started, we need to install the **transformers** library and import the necessary components. Run the following code blocks to set up your environment:
+
+```python
+!pip install -q transformers
+```
+
+```python
+from transformers import pipeline
+
+text_generator = pipeline("text2text-generation", model="google/flan-t5-large")
+```
+
+## Exploring Text Generation
+
+Let's start by exploring how the text generation pipeline works. Imagine you have a piece of context about amino acids, and you want to generate a response to the question, "What do amino acids contain?" The following code demonstrates this process:
+
+```python
+context = '''
+Amino acids are fundamental building blocks of life and play a crucial role in various biological processes.
+They are organic compounds composed of carbon, hydrogen, oxygen, nitrogen, and sometimes sulfur.
+'''
+question = "What do amino acids contain?"
+
+response = text_generator(f"{context} {question}")[0]['generated_text']
+print(response)
+```
+
+In this example, the text generation model generates a coherent response based on the provided context and question. Now, let's move on to creating a chatbot using the transformer-based text generation pipeline.
+
+## Building a Chatbot with Personality
+
+We'll now build a simple chatbot using the **transformers** library and the Hugging Face model hub. The chatbot will have a persona and will be able to engage in a conversation with users. Here's the code for the chatbot class:
+
+```python
+from IPython.display import clear_output
+
+class Chatbot:
+    def __init__(self, model, context) -> None:
+        self.model = model
+        self.initial_context = context
+        self.context = self.initial_context
+        self.user = [x.split(":")[0] for x in context.split("\n")][1]
+        self.persona = [x.split(":")[0] for x in context.split("\n")][0]
+        self.goodbye = "Thank you for chatting with me! Have a great day!"
+        self.hello = "Starting session. Type reset to start over."
+
+    def ask(self, question):
+        question += "." if question[-1] not in [".", "?", "!"] else ""
+        x = f"{self.context}\n{self.user}: {question}\n{self.persona}: "
+        y = self.model(x)
+        response = y[0]["generated_text"]
+        self.context = f"{x}{response}"
+        return response
+
+    def chat(self):
+        print(self.hello, flush=True)
+        print(f"{self.user.title()}:")
+        prompt = input()
+        while prompt != "":
+            if prompt == "reset":
+                clear_output()
+                print(self.hello, flush=True)
+                self.context = self.initial_context
+                print(f"{self.user.title()}:")
+                prompt = input()
+
+            answer = self.ask(prompt)
+            print(f"{self.persona.title()}:\n {answer}", flush=True)
+            print(f"{self.user.title()}:")
+            prompt = input()
+        print(f"{self.persona.title()}:\n{self.goodbye}")
+
+context = f"""
+[virtual assistant]: Welcome to Stainbridge Glass Crafts (Stainbridge, Vermont)! How can I assist you?
+[customer]: Tell me about your specialization in the copper foil method and your 20-year journey.
+...
+[customer]: Thank you for sharing your passion and expertise.
+[virtual assistant]: You're welcome! Feel free to ask more. Your creative journey is important to us.
+"""
+
+chatbot = Chatbot(text_generator, context)
+chatbot.chat()
+```
+
+## Illustrating the Chatbot in Action
+
+Now, let's illustrate the chatbot in action based on the provided context:
+
+```
+Starting session. Type reset to start over.
+[Customer]:
+where are you located?
+[Virtual Assistant]:
+ i am located in stainbridge
+[Customer]:
+what do you sell?
+[Virtual Assistant]:
+ i sell glass crafts
+[Customer]:
+what kind?
+[Virtual Assistant]:
+ glass crafts include vases, bowls, and vases
+[Customer]:
+do you offer delivery?
+[Virtual Assistant]:
+ yes we offer delivery
+[Customer]:
+what kind?
+[Virtual Assistant]:
+ glass crafts include vases, bowls, and vases
+[Customer]:
+how about installation?
+[Virtual Assistant]:
+ yes we offer installation
+[Customer]:
+what do you specialize in?
+[Virtual Assistant]:
+ our expertise lies in the copper foil method
+[Customer]:
+what is that?
+[Virtual Assistant]:
+ copper foil method is a technique that uses copper foil to create a unique pattern on glass
+```
+
+## Analyzing the Chatbot's Performance
+
+While the chatbot performs well within its defined context (conversations about Stainbridge Glass Crafts), it struggles when faced with questions outside its domain. Let's examine the chatbot's responses to non-relevant questions:
+
+- **[Customer]: what is the capital of California?**
+  - **[Virtual Assistant]:** The capital of California is Sacramento.
+  - **Comment:** The chatbot provides the correct answer.
+
+- **[Customer]: how many amino acids are there?**
+  - **[Virtual Assistant]:** There are 66 amino acids in the human body.
+  - **Comment:** The correct answer is 20 amino acids in the human body, so the chatbot's response is incorrect.
+
+- **[Customer]: what is the difference between DNA and RNA?**
+  - **[Virtual Assistant]:** DNA is a single genetic unit of DNA.
+  - **Comment:** The chatbot's response is confusing and inaccurate, indicating a misunderstanding of the question.
+
+- **[Customer]: do animal cells have chloroplasts?**
+  - **[Virtual Assistant]:** Animal cells have chloroplasts.
+  - **Comment:** The chatbot's response is incorrect; animal cells do not have chloroplasts.
+
+In summary, the chatbot demonstrates impressive performance when discussing Stainbridge Glass Crafts but struggles to provide accurate responses outside its designated context. This showcases the importance of carefully defining a chatbot's capabilities and limitations to ensure accurate and relevant interactions. Additionally, ongoing fine-tuning and training could improve the chatbot's ability to handle a wider range of questions. 
+
