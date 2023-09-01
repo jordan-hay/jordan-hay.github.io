@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "Building Conversational AI with Transformers: A Practical Example"
-date:   2023-08-20 17:25:17 -0800
+title:  "Building Conversational AI with Transformers in Python: A Practical Example"
+date:   2023-08-29 17:25:17 -0800
 categories: jekyll update
 category:
 ---
@@ -87,14 +87,20 @@ class Chatbot:
             prompt = input()
         print(f"{self.persona.title()}:\n{self.goodbye}")
 
-context = f"""
-[virtual assistant]: Welcome to Stainbridge Glass Crafts (Stainbridge, Vermont)! How can I assist you?
+context = f"""[virtual assistant]: Welcome to Stainbridge Glass Crafts (Stainbridge, Vermont)! How can I assist you?
 [customer]: Tell me about your specialization in the copper foil method and your 20-year journey.
-...
+[virtual assistant]: Our expertise lies in the copper foil method, which we've refined over two decades.
+[customer]: How does your commitment to this method reflect in your offerings?
+[virtual assistant]: Our curated supplies blend tradition and innovation, inspired by the artistry of copper foil.
+[customer]: How do you ensure quality across time?
+[virtual assistant]: Enduring partnerships and meticulous selection mirror the dedication of the copper foil technique.
+[customer]: Can you explain shipping, delivery, and installation?
+[virtual assistant]: We offer local pickup and shipping with secure packaging. Our team handles installation or recommends trusted local installers.
+[customer]: Do you engage with your community through events or workshops?
+[virtual assistant]: Certainly, we host events and workshops to foster a community around the copper foil method.
 [customer]: Thank you for sharing your passion and expertise.
 [virtual assistant]: You're welcome! Feel free to ask more. Your creative journey is important to us.
 """
-
 chatbot = Chatbot(text_generator, context)
 chatbot.chat()
 ```
@@ -140,6 +146,38 @@ what is that?
 ```
 
 ## Analyzing the Chatbot's Performance
+
+Let's analyze more of the chatbot's responses once again based on the provided context:
+
+```
+Starting session. Type reset to start over.
+[Customer]:
+when are you open?
+[Virtual Assistant]:
+ We are open Monday through Saturday from 10:00 AM to 5:00 PM.
+[Customer]:
+who is the owner?
+[Virtual Assistant]:
+ The owner of Stainbridge Glass Crafts is a local artist named Judith St
+[Customer]:
+do you have underground parking?
+[Virtual Assistant]:
+ Yes, we have underground parking available.
+```
+
+- **[Customer]: when are you open?**
+  - **[Virtual Assistant]:** "We are open Monday through Saturday from 10:00 AM to 5:00 PM."
+  - **Comment:** The chatbot provides business hours information, even though these specific hours are not explicitly mentioned in the context.
+
+- **[Customer]: who is the owner?**
+  - **[Virtual Assistant]:** "The owner of Stainbridge Glass Crafts is a local artist named Judith St"
+  - **Comment:** The chatbot generates the owner's name, "Judith St," which is not present in the provided context.
+
+- **[Customer]: do you have underground parking?**
+  - **[Virtual Assistant]:** "Yes, we have underground parking available."
+  - **Comment:** The chatbot states the availability of underground parking, even though this detail is not mentioned in the context.
+
+In summary, while the chatbot's responses are related to the topics discussed in the context, they also appear to generate some information that is not directly present in the original dialogue. This indicates that the responses might involve a degree of assumption or pattern-based generation. 
 
 While the chatbot performs well within its defined context (conversations about Stainbridge Glass Crafts), it struggles when faced with questions outside its domain. Let's examine the chatbot's responses to non-relevant questions:
 
