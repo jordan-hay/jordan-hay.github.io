@@ -12,6 +12,12 @@ In this blog, we dive into the fascinating world of data manipulation and analys
 
 ## Python Notebook
 
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/SQL_Mastery_Python_Pandas_Colab.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+
 <html>
 <head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
