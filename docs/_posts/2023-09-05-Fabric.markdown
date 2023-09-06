@@ -1,0 +1,78 @@
+---
+layout: post
+title:  "Navigating Microsoft Fabric: From Data Import to Visualization - A User's POV"
+date:   2023-09-05 06:25:17 -0800
+categories: jekyll update
+---
+
+In today's data-driven world, managing and analyzing data efficiently is essential for making informed decisions. Microsoft Fabric is a powerful platform that enables users to seamlessly work with data, from importing and transforming it to creating insightful visualizations. In this blog post, I'll walk you through my journey using Microsoft Fabric's graphical user interface (GUI) to handle data from start to finish.
+
+
+<video src="https://user-images.githubusercontent.com/124033416/265886211-96badc46-a6a9-41a6-94d2-cf2043d1ce17.mp4" controls="controls" style="max-width: 730px;">
+</video>
+
+<video src="https://user-images.githubusercontent.com/124033416/265886439-c7914387-19ef-4c17-8040-7d4522fcda17.mp4" controls="controls" style="max-width: 730px;">
+</video>
+
+
+### **1. Getting Started: Home**
+
+My journey with Microsoft Fabric began at the home screen, where I had access to various functionalities and options. This is where I embarked on my data management adventure.
+
+### **2. Creating a Workspace**
+
+The first step was to create a dedicated workspace to organize my project. I named it "myworkspace" and applied the settings to establish my working environment.
+
+### **3. Setting Up a Lakehouse**
+
+A crucial component of managing data effectively is storage, and Microsoft Fabric allows you to set up a Lakehouse. I named mine "mylakehouse" and created a SQL endpoint successfully.
+
+### **4. SQL Endpoint**
+
+Before diving into data exploration and transformation, I set up an SQL endpoint. This endpoint allowed me to run SQL queries on my data, providing greater flexibility and analytical capabilities.
+
+### **5. Exploring Data with Notebooks**
+
+To work with data, I needed to access it. Using a notebook in Microsoft Fabric, I imported a dataset from an external source. Here's the code I used:
+
+```python
+import pandas as pd
+df = pd.read_csv('https://home.treasury.gov/system/files/276/yield-curve-rates-1990-2021.csv')
+df.columns = [col.replace(" ","") for col in df.columns]
+df.head()
+df1 = spark.createDataFrame(df)
+df1.write.format("parquet").mode("append").format("delta").saveAsTable("interest")
+```
+
+This code allowed me to load the data, clean the column names, convert it to a Delta table format, and save it as a table called "interest."
+
+### **6. Exploring Data in the Lakehouse**
+
+With my data in the Lakehouse, I navigated to the Lakehouse explorer to see the available tables. I refreshed the view and confirmed the presence of the "interest" table.
+
+### **7. Data Transformation**
+
+The next step involved transforming the data to suit my analysis needs. Here's how I did it:
+
+- I created a new DataFlow Gen2 in my workspace.
+- I selected "Get data from another source" and specified "mylakehouse" as the source.
+- I chose the "interest" table for my data source.
+- I performed various data transformations, such as formatting data as dates, duplicating columns, and changing column types to integers.
+- I also extracted year and month information from date columns.
+- To structure the data further, I unpivoted some columns.
+
+### **8. Data Destination: Lakehouse**
+
+After the data transformation, I specified my desired data destination, which was the Lakehouse.
+
+### **9. Creating a New Report**
+
+Once you have your data in place, SQL endpoint set up, and data transformations complete, you can proceed to create a new report to visualize your insights:
+
+- In the Microsoft Fabric interface, go to the "Reports" section.
+- Create a new report by selecting the "New Report" option.
+- Choose the type of visualization you want to create, for example, a matrix visualization, as mentioned in your original steps.
+- Configure the visualization settings, specifying the rows, columns, and values you want to display.
+- Once you've created your visualization and configured it to your liking, save the report with a name, such as "myreport."
+
+And there you have it! I successfully navigated Microsoft Fabric, from importing data and transforming it to creating meaningful visualizations. Microsoft Fabric's GUI made the entire process intuitive and efficient, allowing me to focus on deriving insights from my data rather than grappling with complex technical details. Whether you're a data analyst, scientist, or business professional, Microsoft Fabric can be a valuable tool in your data management and analysis toolkit.
