@@ -1,0 +1,186 @@
+---
+layout: post
+title:  "Building and Deploying a Web App on Google Cloud Run"
+date:   2023-09-14 06:25:17 -0800
+categories: jekyll update
+---
+
+**Introduction**
+
+In this tutorial, we'll take you through the process of building and deploying a web application on Google Cloud Run. Google Cloud Run is a serverless platform that simplifies deploying containerized applications, offering scalability and ease of management. We'll create a web app using Python with Flask, containerized with Docker. Follow the steps below to get your web app up and running on Google Cloud Run.
+
+### Prerequisites
+
+Before we begin, ensure you have the following prerequisites in place:
+
+- A Google Cloud account.
+- [Google Cloud SDK (gcloud CLI)](https://cloud.google.com/sdk/docs/install){:target="_blank"} installed on your local machine.
+
+- Basic knowledge of Docker, Python, and Flask.
+
+### Step 1: Project Setup
+
+1. Open the Google Cloud Console [https://console.cloud.google.com/](https://console.cloud.google.com/){:target="_blank"}.
+
+2. **Select a project or create a new one:** Here, you're either selecting an existing Google Cloud project or creating a new one. The project serves as the environment where your web application will be hosted. Make note of the project ID as it's used for configuration and deployment.
+
+### Step 2: Directory Structure
+
+Ensure your project directory structure looks like this:
+
+```
+/
+    Static/
+    Templates/
+        index.html
+    app.py
+    cloudbuild.yaml
+    Dockerfile
+```
+
+This structured directory layout keeps your project organized:
+
+- **Static**: This directory is where you can place static files like CSS, JavaScript, or images that your web app may need.
+
+- **Templates**: Inside this directory, you store HTML templates for your web pages. The `index.html` file is an example of such a template.
+
+- **app.py**: This Python script is the heart of your web application. It defines how your web app behaves and routes incoming requests. It uses the Flask framework for this purpose.
+
+- **cloudbuild.yaml**: This YAML file is used for configuring Google Cloud Build, which automates the process of building and pushing your Docker image to Google Container Registry.
+
+- **Dockerfile**: Your Dockerfile defines how your application should be packaged into a Docker container. It specifies the base image, sets up the working directory, and installs the necessary dependencies.
+
+### Step 3: Code Setup
+
+#### `index.html` (Templates/index.html)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>Hello, World!</h1>
+</body>
+</html>
+```
+
+This HTML file is a template for your web page. It defines the structure and content that will be displayed to users when they access your web application. Flask uses this template to generate the web page dynamically.
+
+#### `app.py`
+
+```python
+from flask import Flask, render_template
+app = Flask(__name__)
+app.static_folder = 'Static'  
+app.template_folder = 'Templates'
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+if __name__ == '__main__':
+    app.run()
+```
+
+In `app.py`, you create a Flask web application:
+
+- You import the Flask library and initialize your Flask app.
+- `app.static_folder` and `app.template_folder` specify where Flask should look for static files and templates.
+- You define a route using `@app.route('/')`. When users access the root URL ('/'), the `index()` function is executed, rendering the `index.html` template.
+
+#### `cloudbuild.yaml`
+
+```yaml
+steps:
+  # Step 1: Docker Build
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage'
+      - '.'
+
+  # Step 2: Docker Push
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/my-docker-repo/myimage'
+```
+
+The `cloudbuild.yaml` file is used for configuring Google Cloud Build:
+
+- **Step 1: Docker Build**: In this step, Google Cloud Build uses the official Docker image to build your web app's Docker image. The `-t` flag tags the image with a specific registry path, including `${PROJECT_ID}`. The `.` specifies that the build should use the current directory as the context.
+
+- **Step 2: Docker Push**: After building the Docker image, Google Cloud Build pushes it to Google Container Registry. This registry holds your Docker images, making them available for deployment on Google Cloud Run.
+
+#### `Dockerfile`
+
+```Dockerfile
+# Use the official Python 3.8 slim image as the base image
+FROM python:3.8-slim
+
+# Update package information
+RUN apt-get update
+
+# Install Flask using pip
+RUN pip install flask
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container
+COPY . .
+
+# Install Flask and Gunicorn (a WSGI HTTP server for running Flask applications)
+RUN pip install flask gunicorn
+
+# Define the command to run your Flask application with Gunicorn
+CMD ["gunicorn", "--bind", ":$PORT", "app:app"]
+```
+
+The `Dockerfile` defines how your web application should be packaged into a
+
+ Docker container:
+
+- It starts with the official Python 3.8 slim image as the base image.
+- The `RUN` commands update the package information, install Flask, set up the working directory in the container, and copy your project's contents into the container.
+- It installs Flask and Gunicorn, which is a WSGI HTTP server used for running Flask applications.
+- Finally, it specifies the command to run your Flask application using Gunicorn, binding it to the `$PORT` environment variable.
+
+### Step 4: Google Cloud Configuration
+
+Now, let's configure your Google Cloud environment using the gcloud CLI:
+
+```shell
+# Update gcloud components
+gcloud components update
+
+# Set the project
+gcloud config set project myproject-id
+```
+
+- `gcloud components update`: This command ensures that your gcloud components, including the Google Cloud SDK, are up to date.
+
+- `gcloud config set project myproject-id`: It sets the Google Cloud project to `myproject-id`, which is essential for performing operations within the context of that project.
+
+### Step 5: Build and Deploy
+
+Navigate to your project directory and execute the following gcloud commands to build and deploy your web app to Google Cloud Run:
+
+```shell
+# Build the Docker image
+gcloud builds submit --tag gcr.io/myproject-id/myservice
+
+# Deploy the image to Google Cloud Run
+gcloud run deploy myservice --image gcr.io/myproject-id/myservice --allow-unauthenticated --region=us-central1
+```
+
+- `gcloud builds submit --tag gcr.io/myproject-id/myservice`: This command builds your Docker image and submits it to Google Container Registry. The `--tag` option specifies the image's registry path.
+
+- `gcloud run deploy myservice --image gcr.io/myproject-id/myservice --allow-unauthenticated --region=us-central1`: Here, you deploy your Docker image as a service on Google Cloud Run. The `--image` option specifies the image to use, and `--allow-unauthenticated` permits unauthenticated access to your web app. The service is deployed in the `us-central1` region.
+
+**Conclusion**
+
+Congratulations! You've successfully built and deployed a web app on Google Cloud Run. Using Python, Flask, Docker, and the Google Cloud CLI, you've created a scalable and easily manageable web application. Your web app is now accessible via the provided URL. Customize and expand your application as needed for your project.
