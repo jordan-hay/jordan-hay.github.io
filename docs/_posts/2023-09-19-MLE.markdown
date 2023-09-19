@@ -14644,11 +14644,11 @@ $$<p>Where:</p>
 <ul>
 <li>$P(X = k)$ is the probability of getting exactly &quot;k&quot; heads.</li>
 <li>$\binom{n}{k}$ is the binomial coefficient, which is the number of ways to choose &quot;k&quot; successes out of &quot;n&quot; trials and is calculated as $\binom{n}{k} = \frac{n!}{k!(n-k)!}$.</li>
-<li>$\alpha$ is the probability of getting heads in a single coin flip.</li>
+<li>\(\alpha\) is the probability of getting heads in a single coin flip.</li>
 <li>$(1 - \alpha)$ is the probability of getting tails in a single coin flip.</li>
 <li>$n$ is the total number of coin flips.</li>
 </ul>
-<p>This formula gives you the probability of obtaining exactly &quot;k&quot; heads in &quot;n&quot; trials when the probability of heads in each trial is &quot;a&quot; and the probability of tails is $(1 - a)$.</p>
+<p>This formula gives you the probability of obtaining exactly &quot;k&quot; heads in &quot;n&quot; trials when the probability of heads in each trial is $\alpha$; and the probability of tails is $(1 - \alpha)$.</p>
 <p>In statistics, particularly in the context of hypothesis testing and parameter estimation, we often encounter situations where we want to assess the likelihood of a certain parameter given the observed data. One common scenario is when dealing with a series of binary outcomes, such as the number of heads obtained in a series of coin flips.</p>
 <p>Consider a sequence of 'n' coin flips, where each flip has a probability 'α' of landing heads ('success') and a probability of '1 - α' of landing tails ('failure'). We are interested in determining the likelihood of the parameter 'α' given that we observed 'k' heads in these 'n' trials. This likelihood function, denoted as $\mathcal{L}(\alpha \mid k)$, can be calculated using the Binomial probability formula, which describes the probability of getting exactly 'k' heads in 'n' flips of an unfair coin with a probability 'α' of landing heads:</p>
 $$
