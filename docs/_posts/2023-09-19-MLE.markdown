@@ -4,15 +4,17 @@ title:  "Implementing Maximum Likelihood Estimation"
 date:   2023-09-19 06:25:17 -0800
 categories: jekyll update
 ---
-
-
 ## Introduction
-
-When it comes to statistics, Maximum Likelihood Estimation (MLE) is a handy tool for figuring out the inner workings of probability distributions. Think of it as a method that helps us estimate the key parameters of these distributions. 
+When it comes to statistics, Maximum Likelihood Estimation (MLE) is a handy tool for figuring out the inner workings of probability distributions. Think of it as a method that helps us estimate the key parameters of these distributions.
+<br><br>
 
 Here's the deal: MLE is all about finding the best guesses for those parameters by making the data fit as snugly as possible into a specific distribution. We do this by crunching numbers and using something called the "likelihood function." This function tells us how likely it is to see our data given our assumptions about the distribution and its parameters.
+<br><br>
+
 
 Now, the math behind MLE can get a bit complicated, but one neat trick it often employs is working with the log-likelihood function. This trick simplifies things by turning a bunch of tricky probability multiplication into easy addition.
+<br><br>
+
 
 So, get ready for a journey into the world of MLE, where we'll break down this crucial statistical technique for estimating parameters in a way that's easy to understand.
 
