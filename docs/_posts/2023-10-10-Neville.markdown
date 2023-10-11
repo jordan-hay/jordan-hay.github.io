@@ -150,7 +150,6 @@ Given data points:
 - $$P_{1,2}(x) = 0.5102968$$ 
 - $$P_{2,3}(x) = 0.5132634$$
 
-Certainly, let's provide an example with $$i = 4$$ and $$k = 4$$ for Neville's algorithm. In this case, we'll be calculating the polynomial interpolation of degree 4 using the data points from indices 0 to 4:
 
 ### Example with $$i = 4$$ and $$k = 4$$
 
