@@ -1,0 +1,168 @@
+---
+layout: post
+title:  "Understanding Neville's Algorithm for Polynomial Interpolation
+"
+date:   2023-10-10 06:25:17 -0800
+categories: jekyll update
+---
+Polynomial interpolation is a powerful mathematical technique used to approximate a function by a polynomial of a given degree. It finds applications in various fields, including physics, engineering, and computer graphics. One of the methods used for polynomial interpolation is Neville's algorithm, which allows us to efficiently compute the interpolating polynomial at a specific point. In this blog post, we will delve into the details of Neville's algorithm and provide a Python implementation to illustrate its usage.
+
+
+## Introduction to Data Points
+
+Before we delve into the intricacies of Neville's algorithm and its practical applications, let's establish a firm understanding of the foundational elements at its core: the data points. In polynomial interpolation, data points are pivotal as they represent the connection between the independent variable $$(x)$$ and the dependent variable $$y$$.
+
+For our illustrative purposes, we will be working with a specific set of data points, conveniently tabulated below:
+
+
+|$$i$$| $$x_i$$ | $$y = f(x) = P_{i} = Q_{i0}$$    |
+|---| ------ | ------------- |
+| 0 | 1.0    | 0.7651977     |
+| 1 | 1.3    | 0.6200860     |
+| 2 | 1.6    | 0.4554022     |
+| 3 | 1.9    | 0.2818186     |
+| 4 | 2.2    | 0.1103623     |
+
+
+In this table, $$x_i$$ represents distinct values along the independent variable (x-axis), while $$Q_{i0}$$ signifies the associated dependent variable values, or $$y$$, for each corresponding $$x_i$$.
+
+
+## Neville's Algorithm
+
+Neville's algorithm is an iterative approach to polynomial interpolation that builds a table of intermediate values to calculate the polynomial's value at a desired point. It is particularly useful when you need to interpolate a polynomial through a set of data points. The algorithm's core idea is to construct a table of values, where each row represents an incrementally refined polynomial approximation.
+
+The general formula for Neville's algorithm is as follows:
+
+$$
+P_{i-k, i-k+1, \ldots, i}(x)=\frac{\left(x-x_{i-k}\right) P_{i-k+1, \ldots, i}(x)-\left(x-x_i\right) P_{i-k, \ldots,i-1}(x)}{x_i-x_{i-k}}
+$$
+
+In this formula, $$P_{i-k, i-k+1, \ldots, i}(x)$$ represents the polynomial approximation of degree $$k$$ at the point $$x$$. For example, The term $$P_{2,3,4}$$ in this context refers to the second-degree Lagrange polynomial that aligns with the data points at nodes 2, 3, and 4. The alternative notation $$Q_{4,2}$$ just means the value corresponding to row 4 and column 2 in the table of polynomial approximations. The algorithm constructs a table where each cell corresponds to $$P_{i-k, i-k+1, \ldots, i}(x)$$ for different values of $$i$$ and $$k$$. The final result is obtained in the last row of this table. Here is the table showing the progression of polynomial approximations for the given data points:
+
+|$$i$$|   $$x_i$$   |  $$0^{th}$$ deg  |  $$1^{st}$$ deg  |  $$2^{nd}$$ deg  |  $$3^{rd}$$ deg  |  $$4^{th}$$  deg  |
+|---|-------|----------|----------|----------|----------|----------|
+| 0 |  $$x_0$$  | $$P_{0}=Q_{0,0}$$ |          |          |          |          |
+| 1 |  $$x_1$$  | $$P_{1}=Q_{1,0}$$ | $$P_{0,1}=Q_{1,1}$$ |          |          |          |
+| 2 |  $$x_2$$  | $$P_{2}=Q_{2,0}$$ | $$P_{1,2}=Q_{2,1}$$ | $$P_{0,1,2}=Q_{2,2}$$ |          |          |
+| 3 |  $$x_3$$  | $$P_{3}=Q_{3,0}$$ | $$P_{2,3}=Q_{3,1}$$ | $$P_{1,2,3}=Q_{3,2}$$ | $$P_{0,1,2,3}=Q_{3,3}$$ |          |
+| 4 |  $$x_4$$  | $$P_{4}=Q_{4,0}$$ | $$P_{3,4}=Q_{4,1}$$ | $$P_{2,3,4}=Q_{4,2}$$ | $$P_{1,2,3,4}=Q_{4,3}$$ | $$P_{0,1,2,3,4}=Q_{4,4}$$ |
+
+
+## Examples with $$k=1$$
+
+Let's now provide three examples of polynomial approximations using Neville's algorithm when $$k$$ is 1:
+
+### Example 1: Linear Interpolation between Data Points 0 and 1
+
+In this case, we calculate a linear interpolation between data points with indices 0 and 1. The formula becomes:
+
+$$
+P_{0,1}(x)=\frac{\left(x-x_{0}\right) P_{1}(x)-\left(x-x_1\right) P_{0}(x)}{x_1-x_{0}}
+$$
+
+Given data points:
+- $$x_0 = 1.0$$
+- $$x_1 = 1.3$$
+- $$P_0(x) = 0.7651977$$
+- $$P_1(x) = 0.6200860$$
+
+### Example 2: Linear Interpolation between Data Points 1 and 2
+
+In this case, we calculate a linear interpolation between data points with indices 1 and 2. The formula becomes:
+
+$$
+P_{1,2}(x)=\frac{\left(x-x_{1}\right) P_{2}(x)-\left(x-x_2\right) P_{1}(x)}{x_2-x_{1}}
+$$
+
+Given data points:
+- $$x_1 = 1.3$$
+- $$x_2 = 1.6$$
+- $$P_1(x) = 0.6200860$$
+- $$P_2(x) = 0.4554022$$
+
+### Example 3: Linear Interpolation between Data Points 2 and 3
+
+In this case, we calculate a linear interpolation between data points with indices 2 and 3. The formula becomes:
+
+$$
+P_{2,3}(x)=\frac{\left(x-x_{2}\right) P_{3}(x)-\left(x-x_3\right) P_{2}(x)}{x_3-x_{2}}
+$$
+
+Given data points:
+- $$x_2 = 1.6$$
+- $$x_3 = 1.9$$
+- $$P_2(x) = 0.4554022$$
+- $$P_3(x) = 0.2818186$$
+
+
+## Python Implementation
+
+
+Now, let's see how we can implement Neville's algorithm in Python using the NumPy library:
+
+```python
+import numpy as np
+
+def neville(x, xi, Qi0):
+    n = len(xi) - 1
+    Table = np.zeros((n + 1, n + 1))
+
+    for i in range(n + 1):
+        Table[i, 0] = Qi0[i]
+
+    for j in range(1, n + 1):
+        for i in range(j, n + 1):
+            Table[i, j] = ((x - xi[i]) * Table[i - 1, j - 1] - (x - xi[i - j]) * Table[i, j - 1]) / (xi[i - j] - xi[i])
+
+    return np.asarray(Table)
+
+# Example usage:
+xi = np.asarray([1.0, 1.3, 1.6, 1.9, 2.2])  
+Qi0 = np.asarray([0.7651977, 0.6200860, 0.4554022, 0.2818186, 0.1103623])  
+
+x = 1.5
+Q = neville(x, xi, Qi0)
+print(Q)
+```
+
+When you run this code, it will output a table representing polynomial approximations at different degrees for the given data points and the point of interest, $$x=1.5$$.
+
+
+
+
+|  i | 0th deg   | 1st deg   | 2nd deg   | 3rd deg   | 4th deg   |
+|---|-----------|-----------|-----------|-----------|-----------|
+| 0 | 0.7651977 |           |           |           |           |
+| 1 | 0.620086  | 0.52334487|           |           |           |
+| 2 | 0.4554022 | 0.5102968 | 0.51247148|           |           |
+| 3 | 0.2818186 | 0.5132634 | 0.51128567| 0.51181269|           |
+| 4 | 0.1103623 | 0.510427  | 0.51373613| 0.51183021| 0.51181999|
+
+### Example with $$i = 3$$ and $$k = 2$$
+
+$$
+P_{1,2,3}(x) = \frac{(x - x_1)P_{2,3}(x) - (x - x_3)P_{1,2}(x)}{x_3 - x_1}
+$$
+
+Given data points:
+- $$x_1 = 1.3$$
+- $$x_3 = 1.9$$
+- $$P_{1,2}(x) = 0.5102968$$ 
+- $$P_{2,3}(x) = 0.5132634$$
+
+Certainly, let's provide an example with $$i = 4$$ and $$k = 4$$ for Neville's algorithm. In this case, we'll be calculating the polynomial interpolation of degree 4 using the data points from indices 0 to 4:
+
+### Example with $$i = 4$$ and $$k = 4$$
+
+$$
+P_{0,1,2,3,4}(x) = \frac{(x - x_0)P_{1,2,3,4}(x) - (x - x_4)P_{0,1,2,3}(x)}{x_4 - x_0}
+$$
+
+Given data points:
+- $$x_0 = 1.0$$
+- $$x_4 = 2.2$$
+- $$P_{0,1,2,3}(x) = 0.51181269$$ 
+- $$P_{1,2,3,4}(x) = 0.51183021$$
+
+
+
