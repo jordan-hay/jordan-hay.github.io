@@ -158,20 +158,38 @@ To summarize,
 
 4. **Simplify the Expression:** 
 
-   - The denominator $$\left(\frac{1}{1+r}\right) - 1$$ simplifies to 'r'.
-   - The numerator $$\frac{C}{1+r}\left(\left(\frac{1}{1+r}\right)^n - 1\right)\$$ can be simplified as well.
+   
+$$
+\frac{\frac{C}{1+r}\left(\left(\frac{1}{1+r}\right)^n - 1\right)}{\frac{1}{1+r} - 1}
+$$
 
-   So, the expression becomes:
 
-   $$A = \frac{C \left(\left(\frac{1}{1+r}\right)^n - 1\right)}{r}$$
+1. Expand the numerator:
+   
+   $$\frac{C}{1+r}\left(\left(\frac{1}{1+r}\right)^n - 1\right) = \frac{C}{1+r}\left(\frac{1}{(1+r)^n} - 1\right)$$
 
-5. **Present Value of the Annuity:** To find the present value (PV) of the annuity, you need to discount the total value (A) to its present value by dividing by the discount rate (r).
+2. Expand the denominator:
 
-   $$PV = \frac{A}{(1 + r)^n} = \frac{C \left(\left(\frac{1}{1+r}\right)^n - 1\right)}{r(1 + r)^n}$$
+   $$\frac{1}{1+r} - 1 = \frac{1 - (1+r)}{1+r} = \frac{-r}{1+r}$$
 
-   Finally, you can simplify the formula to get the correct present value of an annuity:
+3. Substitute these results back into the main expression:
 
-   $$PV = \frac{C \cdot \left(1 - \frac{1}{(1+r)^n}\right)}{r}$$
+   $$\frac{\frac{C}{1+r}\left(\frac{1}{(1+r)^n} - 1\right)}{\frac{-r}{1+r}}$$
+
+4. Now, combine the fractions in the numerator by multiplying by the reciprocal of the denominator:
+
+   $$\frac{C}{1+r}\left(\frac{1}{(1+r)^n} - 1\right) \cdot \frac{1+r}{-r}$$
+
+5. Further simplify the expression by canceling common factors:
+
+   $$\frac{C}{-r} \left(\frac{1}{(1+r)^n} - 1\right)$$
+
+This expression matches the formula for the present value of an ordinary annuity:
+
+$$
+PV = \frac{C}{r} \left(1 - \frac{1}{(1+r)^n}\right)
+$$
+
 
 ## Annuity Due
 An annuity due is similar to an ordinary annuity, with one crucial difference: the payments occur at the beginning of each period, rather than at the end. This shift in timing has implications for the calculation of the present value. The formula for the present value of an annuity due is as follows:
