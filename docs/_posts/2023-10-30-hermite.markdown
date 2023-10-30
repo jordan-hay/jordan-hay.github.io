@@ -1,0 +1,141 @@
+---
+layout: post
+title:  "Hermite Polynomial Interpolation Using Divided Differences"
+date:   2023-10-30 06:25:17 -0800
+categories: jekyll update
+---
+Interpolation is a mathematical technique used to estimate values between two known data points. It is particularly useful in various scientific and engineering applications, such as function approximation, signal processing, and data analysis. One common method of interpolation is the Hermite polynomial interpolation, which allows us to approximate a function using both its function values and derivative values at specific points. In this blog, we will explore Hermite polynomial interpolation and implement it using the concept of divided differences in Python. The data used in this example corresponds to the values of the modified Bessel function of the second kind.
+
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>                <div id="0658f541-d45d-4bd1-a81e-806a2e8b457c" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("0658f541-d45d-4bd1-a81e-806a2e8b457c")) {                    Plotly.newPlot(                        "0658f541-d45d-4bd1-a81e-806a2e8b457c",                        [{"line":{"color":"pink","width":8},"mode":"lines","name":"Hermite interpolation","x":[1.0,1.0084033613445378,1.0168067226890756,1.0252100840336134,1.0336134453781514,1.0420168067226891,1.050420168067227,1.0588235294117647,1.0672268907563025,1.0756302521008403,1.084033613445378,1.0924369747899159,1.1008403361344539,1.1092436974789917,1.1176470588235294,1.1260504201680672,1.134453781512605,1.1428571428571428,1.1512605042016806,1.1596638655462184,1.1680672268907564,1.1764705882352942,1.184873949579832,1.1932773109243697,1.2016806722689075,1.2100840336134453,1.2184873949579833,1.226890756302521,1.2352941176470589,1.2436974789915967,1.2521008403361344,1.2605042016806722,1.26890756302521,1.2773109243697478,1.2857142857142856,1.2941176470588236,1.3025210084033614,1.3109243697478992,1.319327731092437,1.3277310924369747,1.3361344537815125,1.3445378151260505,1.3529411764705883,1.361344537815126,1.3697478991596639,1.3781512605042017,1.3865546218487395,1.3949579831932772,1.403361344537815,1.4117647058823528,1.4201680672268908,1.4285714285714286,1.4369747899159664,1.4453781512605042,1.453781512605042,1.4621848739495797,1.4705882352941178,1.4789915966386555,1.4873949579831933,1.495798319327731,1.504201680672269,1.5126050420168067,1.5210084033613445,1.5294117647058822,1.53781512605042,1.5462184873949578,1.5546218487394958,1.5630252100840336,1.5714285714285714,1.5798319327731092,1.5882352941176472,1.596638655462185,1.6050420168067228,1.6134453781512605,1.6218487394957983,1.6302521008403361,1.638655462184874,1.6470588235294117,1.6554621848739495,1.6638655462184873,1.672268907563025,1.680672268907563,1.6890756302521008,1.6974789915966386,1.7058823529411764,1.7142857142857144,1.7226890756302522,1.73109243697479,1.7394957983193278,1.7478991596638656,1.7563025210084033,1.7647058823529411,1.773109243697479,1.7815126050420167,1.7899159663865545,1.7983193277310923,1.8067226890756303,1.815126050420168,1.8235294117647058,1.8319327731092436,1.8403361344537816,1.8487394957983194,1.8571428571428572,1.865546218487395,1.8739495798319328,1.8823529411764706,1.8907563025210083,1.8991596638655461,1.907563025210084,1.9159663865546217,1.9243697478991595,1.9327731092436973,1.9411764705882353,1.949579831932773,1.9579831932773109,1.9663865546218489,1.9747899159663866,1.9831932773109244,1.9915966386554622,2.0],"y":[1.62484,1.5928912406391902,1.5617594068993188,1.531418214568855,1.501842305437157,1.4730072280791604,1.444889416442507,1.4174661666530723,1.3907156124144764,1.3646166993393936,1.3391491585151107,1.314293479572799,1.2900308834992067,1.2663432954009342,1.2432133174048878,1.2206242018540292,1.19855982493487,1.1770046608523212,1.155943756648413,1.1353627077438977,1.1152476342658462,1.0955851582098988,1.076362381472769,1.0575668647789236,1.0391866075148384,1.0212100284749956,1.0036259475155676,0.986423568104624,0.9695924607515184,0.9531225472928807,0.937004086008218,0.9212276575345326,0.905784151546461,0.8906647541662501,0.8758609360662608,0.8613644412256756,0.8471672763025658,0.833261700582388,0.8196402164643695,0.8062955604479369,0.7932206945823894,0.7804087983443591,0.7678532609091464,0.7555476737838032,0.7434858237717542,0.7316616862408263,0.7200694186686905,0.708703354441972,0.6975579968875153,0.6866280135165815,0.6759082304649842,0.6653936271143882,0.6550793308821262,0.6449606121689558,0.6350328794561165,0.6252916745448908,0.615732667933559,0.60635165432819,0.5971445482850923,0.5881073799839771,0.5792362911319046,0.5705275309989712,0.5619774525873397,0.55358250893571,0.5453392495616199,0.5372443170440613,0.5292944437488343,0.5214864486987816,0.5138172345906317,0.5062837849595795,0.49888316149198525,0.4916125014856856,0.4844690154563985,0.47744998488758866,0.47055276011993385,0.46377475837525317,0.4571134619084354,0.45056641627951594,0.4441312287367198,0.4378055666999248,0.43158715633274075,0.42547378119018014,0.41946328092784607,0.41355355005760475,0.4077425367340213,0.40202824155528055,0.39640871636210673,0.3908820630182641,0.3854464321566259,0.38010002187563513,0.3748410763722453,0.3696678844991859,0.364578778236711,0.3595721310718958,0.35464635628209656,0.3497999051234772,0.3450312649305316,0.3403389571383911,0.3357215352464903,0.3311775827498356,0.3267057110728976,0.3223045575509206,0.31797278351445973,0.3137090725451193,0.3095121289840077,0.30538067678926245,0.301313458855368,0.2973092369248188,0.29336679224217016,0.289484927121684,0.28566246762269515,0.2818982675516671,0.2781912140366191,0.2745402349484446,0.2709443084745046,0.2674024751831103,0.2639138529528908,0.26047765517899857,0.25709321270846097,0.2537600000000006],"type":"scatter"},{"line":{"color":"red","dash":"dash"},"mode":"lines","name":"BesselK","x":[1.0,1.0084033613445378,1.0168067226890756,1.0252100840336134,1.0336134453781514,1.0420168067226891,1.050420168067227,1.0588235294117647,1.0672268907563025,1.0756302521008403,1.084033613445378,1.0924369747899159,1.1008403361344539,1.1092436974789917,1.1176470588235294,1.1260504201680672,1.134453781512605,1.1428571428571428,1.1512605042016806,1.1596638655462184,1.1680672268907564,1.1764705882352942,1.184873949579832,1.1932773109243697,1.2016806722689075,1.2100840336134453,1.2184873949579833,1.226890756302521,1.2352941176470589,1.2436974789915967,1.2521008403361344,1.2605042016806722,1.26890756302521,1.2773109243697478,1.2857142857142856,1.2941176470588236,1.3025210084033614,1.3109243697478992,1.319327731092437,1.3277310924369747,1.3361344537815125,1.3445378151260505,1.3529411764705883,1.361344537815126,1.3697478991596639,1.3781512605042017,1.3865546218487395,1.3949579831932772,1.403361344537815,1.4117647058823528,1.4201680672268908,1.4285714285714286,1.4369747899159664,1.4453781512605042,1.453781512605042,1.4621848739495797,1.4705882352941178,1.4789915966386555,1.4873949579831933,1.495798319327731,1.504201680672269,1.5126050420168067,1.5210084033613445,1.5294117647058822,1.53781512605042,1.5462184873949578,1.5546218487394958,1.5630252100840336,1.5714285714285714,1.5798319327731092,1.5882352941176472,1.596638655462185,1.6050420168067228,1.6134453781512605,1.6218487394957983,1.6302521008403361,1.638655462184874,1.6470588235294117,1.6554621848739495,1.6638655462184873,1.672268907563025,1.680672268907563,1.6890756302521008,1.6974789915966386,1.7058823529411764,1.7142857142857144,1.7226890756302522,1.73109243697479,1.7394957983193278,1.7478991596638656,1.7563025210084033,1.7647058823529411,1.773109243697479,1.7815126050420167,1.7899159663865545,1.7983193277310923,1.8067226890756303,1.815126050420168,1.8235294117647058,1.8319327731092436,1.8403361344537816,1.8487394957983194,1.8571428571428572,1.865546218487395,1.8739495798319328,1.8823529411764706,1.8907563025210083,1.8991596638655461,1.907563025210084,1.9159663865546217,1.9243697478991595,1.9327731092436973,1.9411764705882353,1.949579831932773,1.9579831932773109,1.9663865546218489,1.9747899159663866,1.9831932773109244,1.9915966386554622,2.0],"y":[1.6248388986351774,1.5928907753929118,1.5617604898014241,1.531421232170056,1.5018472773815845,1.4730139326573999,1.4448974882353176,1.4174751707758348,1.3907250993256772,1.3646262436794392,1.3391583849911985,1.3143020784982098,1.290038618228186,1.266350003570441,1.243218907599211,1.2206286470449559,1.1985631538163666,1.1770069479821992,1.1559451121280244,1.135363267008489,1.1152475484208026,1.0955845852299446,1.07636147848046,1.0575657815338884,1.0391854811746344,1.0212089796306911,1.0036250774589153,0.9864229572476622,0.969592168092453,0.9531226108030448,0.9370045238027704,0.9212284696833594,0.9057853223806358,0.8906662549385351,0.8758627278307783,0.8613664778113428,0.8471695072665321,0.8332640740430024,0.8196426817275926,0.8062980703561422,0.793223207529807,0.7804112799185478,0.7678556851326356,0.75555002394405,0.7434880928406638,0.73166387689703,0.7200715429464773,0.7087054330400386,0.6975600581785165,0.6866300923047286,0.6759103665436526,0.6653958636788453,0.6550817128541171,0.644963184490024,0.6350356854052704,0.6252947541336364,0.6157360564275203,0.6063553809396387,0.5971486350748614,0.5881118410045597,0.5792411318362257,0.570532747931485,0.5619830333659703,0.5535884325248308,0.5453454868279752,0.5372508315794255,0.5293011929354261,0.5214933849862236,0.5138243069466655,0.5062909404510044,0.4988903469475118,0.49161966518871014,0.48447610881323033,0.4774569640154971,0.47055958729959924,0.46378140331390016,0.45711990276307485,0.4505726403944285,0.44413723305549124,0.4378113578200138,0.431592750179626,0.4254792022985419,0.41946856132880606,0.4135587277836934,0.40774765396697943,0.4020333424558922,0.39641384463566676,0.3908872592836925,0.385451731201354,0.3801054498917309,0.37484664828140857,0.3696736014847247,0.3645846256088485,0.3595780765981548,0.3546523491164265,0.34980587546546915,0.3450371245387951,0.34034460080907225,0.33572684334811,0.33118242487818117,0.3267099508535408,0.3223080585710569,0.31797541630888626,0.31371072249220544,0.30951270488501625,0.3053801198071042,0.3013117513752581,0.29730641076789344,0.29336293551225523,0.2894801887934195,0.28565705878432235,0.28189245799609697,0.2781853226480152,0.27453461205635576,0.27093930804155814,0.2673984143530363,0.26391095611104903,0.2604759792650596,0.2570925500680201,0.2537597545660559],"type":"scatter"},{"mode":"markers","name":"data","x":[1.0,1.2,1.4,1.6,1.8,2.0],"y":[1.62484,1.04283,0.70199,0.48874,0.34884,0.25376],"type":"scatter"}],                        {"legend":{"x":0.5,"y":1},"title":{"text":"Hermite Interpolation vs. BesselK"},"xaxis":{"title":{"text":"X-Axis"}},"yaxis":{"title":{"text":"Y-Axis"}},"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"responsive": true}                    )                };                            </script>        </div>
+
+## Understanding Hermite Polynomial Interpolation
+
+Hermite polynomial interpolation is a powerful interpolation technique that provides an accurate approximation of a function by taking into account not only its function values at given points but also its derivative values. This results in a more flexible interpolation method that can accurately represent complex functions.
+
+The divided differences method is a key concept in Hermite polynomial interpolation. It involves computing differences between function values at distinct points and using these differences to construct a polynomial. In the case of Hermite interpolation, we use the divided differences method to create a polynomial that matches both function values and derivative values.
+
+## Divided Differences Method
+
+The divided differences method is a recursive algorithm used to compute coefficients for interpolating polynomials. It takes a set of points and their corresponding function values (and derivative values in the case of Hermite interpolation) and constructs a polynomial that passes through these points. The divided differences are computed in a step-by-step manner, and the final polynomial is built by combining these differences.
+
+Let's implement Hermite polynomial interpolation using the divided differences method in Python with NumPy and Matplotlib. We'll break the code into blocks and explain each step.
+
+### Import Libraries
+
+In this first code block, we import the necessary libraries, including NumPy for array operations and Matplotlib for data visualization. Additionally, we import `scipy.special.kn` to compare our Hermite interpolation with the BesselK function.
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import kn
+```
+
+### Compute Divided Differences
+
+
+|   $$z$$   |   $$f[z]$$   |   First   |   Second              |
+|-------|-------|-------|-------------------|
+| $$z_0 = x_0$$ | $$f [z_0] = f(x_0)$$ |  |  |
+| $$z_1 = x_0$$ | $$f [z_1] = f(x_0)$$ | $$f[z_0, z_1] =f'(x_0)$$ |  |
+| $$z_2 = x_1$$ | $$f [z_2] = f(x_1)$$ | $$f[z_1, z_2] =\frac{ f[z_2] - f[z_1]}{z_2 - z_1}$$ | $$f[z_0,z_1, z_2]= \frac{f[z_1, z_2] - f[z_0, z_1]}{z_2 - z_0}$$ |
+| $$z_3 = x_1$$ | $$f [z_3] = f(x_1)$$ | $$f[z_2, z_3] =f'(x_1)$$ | $$f[z_1, z_2, z_3] =\frac{f[z_2, z_3] - f[z_1, z_2]}{z_3 - z_1}$$ |
+| $$z_4 = x_2$$ | $$f [z_4] = f(x_2)$$ | $$f[z_3, z_4] = \frac{f[z_4] - f[z_3]}{z_4 - z_3}$$ | $$f[z_2, z_3, z_4] =\frac{f[z_3, z_4] - f[z_2, z_3]}{z_4 - z_2}$$ |
+| $$z_5 = x_2$$ | $$f [z_5] = f(x_2)$$ | $$f[z_4, z_5] = f'(x_2)$$ | $$f[z_3, z_4, z_5] =\frac{f[z_4, z_5] - f[z_3, z_4]}{z_5 - z_3}$$ |
+
+The following code block defines the `hermitedivdiff` function, which calculates the divided differences required for Hermite interpolation. It takes three arrays as input: `x_values` (data points), `y_values` (function values), and `y_prime_values` (derivative values).
+
+```python
+def hermitedivdiff(x_values, y_values, y_prime_values):
+    m = len x_values
+    l = 2 * m
+    z = np.zeros(l)
+    a = np.zeros(l)
+    Q = []
+
+    for i in range(m):
+        z[2 * i:2 * i + 2] = x_values[i]
+        a[2 * i:2 * i + 2] = y_values[i]
+    Q.append(a.tolist())
+
+    for i in np.flip(range(2, l, 2)):
+        a[i] = (a[i] - a[i - 1]) / (z[i] - z[i - 1])
+    for i in range(0, m):
+        a[2 * i + 1] = y_prime_values[i]
+    Q.append(a[1::].tolist())
+
+    for j in range(2, l):
+        for i in np.flip(range(j, l)):
+            a[i] = (a[i] - a[i - 1]) / (z[i] - z[i - j])
+        Q.append(a[j::].tolist())
+
+    return a
+```
+Give the data:
+```python
+x_values = np.asarray([1.0, 1.2, 1.4, 1.6, 1.8, 2.0])
+y_values = np.asarray([1.62484, 1.04283, 0.70199, 0.48874, 0.34884, 0.25376])
+y_prime_values = np.asarray([-3.85158, -2.17264, -1.32368, -0.85156, -0.57022, -0.39362])
+```
+
+The divided difference table ($$Q$$) for the given data is as follows:
+
+| $$f[z]$$      |First| Second     | Third      | 4th     | 5th     | 6th     | 7th     | 8th    | 9th    | 10th   | 11th  |
+|-----|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| 1.62484                     |       |       |       |       |       |       |       |       |
+| 1.62484 | -3.85158           |       |       |       |       |       |       |       |
+| 1.04283 | -2.91005 | 4.70765 |       |       |       |       |       |       |       |
+| 1.04283 | -2.17264 | 3.68705 | -5.103 |       |       |       |       |       |       |
+| 0.70199 | -1.7042  | 2.3422  | -3.36213 | 4.35219 |       |       |       |       |       |
+| 0.70199 | -1.32368 | 1.9026  | -2.198   | 2.91031 | -3.60469 |       |       |       |       |
+| 0.48874 | -1.06625 | 1.28715 | -1.53862 | 1.64844 | -2.10313 | 2.5026  |       |       |       |
+| 0.48874 | -0.85156 | 1.07345 | -1.0685  | 1.17531 | -1.18281 | 1.53385 | -1.61458 |       |       |
+| 0.34884 | -0.6995  | 0.7603  | -0.78287 | 0.71406 | -0.76875 | 0.6901  | -1.05469 | 0.69987 |       |
+| 0.34884 | -0.57022 | 0.6464  | -0.5695  | 0.53344 | -0.45156 | 0.52865 | -0.2691  | 0.98199 | 0.35265 |
+| 0.25376 | -0.4754  | 0.4741  | -0.43075 | 0.34687 | -0.31094 | 0.23438 | -0.36784 | -0.12343 | -1.10541 | -1.45806 |
+| 0.25376 | -0.39362 | 0.4089  | -0.326   | 0.26187 | -0.2125  | 0.16406 | -0.11719 | 0.31331 | 0.54593  | 1.65134  | 3.1094  |
+
+### The Hermite Interpolation Polynomial
+
+At the core of Hermite interpolation is the construction of a polynomial, denoted as *H(x)*, that represents the approximation of a given function. The Hermite polynomial *H(x)* is expressed as:
+
+$$H(x) = Q_{0,0} + Q_{1,1}(x - x_0) + Q_{2,2}(x - x_0)^2 + Q_{3,3}(x - x_0)^2(x - x_1) + Q_{4,4}(x - x_0)^2(x - x_1)^2 + \ldots + Q_{2n+1,2n+1}(x - x_0)^2(x - x_1)^2 \ldots (x - x_{n-1})^2(x - x_n).$$
+
+In this equation, *H(x)* is the Hermite interpolation polynomial, and it is defined by the coefficients $$Q_{i,i}$$, where *i* ranges from 0 to $$2n+1$$, where $$n$$ is the degree of the polynomial. Each $$Q_{i,i}$$ represents an entry in the divided-difference table. 
+
+
+### Hermite Polynomial Approximation
+
+In this code block, we define the `hermite_poly_approx` function, which uses the divided differences computed in the previous step to approximate the Hermite polynomial at a given point `x`.
+
+```python
+def hermite_poly_approx(x_values, y_values, y_prime_values, x):
+    m = len(x_values)
+    Q = hermitedivdiff(x_values, y_values, y_prime_values)
+    z = np.zeros(2 * m)
+    for i in range(m):
+        z[2 * i:2 * i + 2] = x_values[i]
+    Hx = Q[0]
+    pr = 1
+    for j in range(2 * m - 1):
+        pr *= x - z[j]
+        Hx += Q[j + 1] * pr
+    return Hx
+```
+
+### Input Data and Visualization
+
+In this final code block, we provide sample input data (`x_values`, `y_values`, and `y_prime_values`) and generate the Hermite polynomial interpolation over a specified range using the `hermite_poly_approx` function. We also visualize the results using Matplotlib.
+
+```python
+xaxis = np.linspace(1, 2, 120)
+interp = hermite_poly_approx(x_values, y_values, y_prime_values, xaxis)
+
+plt.plot(xaxis, interp, label='Hermite interpolation', linewidth=8.0, color='pink')
+plt.plot(xaxis, kn(2, xaxis), label="BesselK", linestyle='--', color='red')
+plt.plot(x_values, y_values, 'o', label='Known Data (BesselK)')
+plt.legend(loc='upper right')
+plt.show()
+```
+
+You can use this code to perform Hermite polynomial interpolation and visualize the results for your specific data and application. Hermite interpolation, with its ability to account for both function values and derivative values, is a versatile tool for approximating complex functions accurately.
