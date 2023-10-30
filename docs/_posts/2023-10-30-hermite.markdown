@@ -147,6 +147,7 @@ interp = hermite_poly_approx(x_values, y_values, y_prime_values, xaxis)
 plt.plot(xaxis, interp, label='Hermite interpolation',linewidth=8.0,color='pink')
 plt.plot(xaxis, gamma(xaxis), label="Gamma",linestyle='--',color='red')
 plt.plot(x_values, y_values, 'o', label='data')
-plt.legend(loc='upper left');```
+plt.legend(loc='upper left');
+```
 
 You can use this code to perform Hermite polynomial interpolation and visualize the results for your specific data and application. Hermite interpolation, with its ability to account for both function values and derivative values, is a versatile tool for approximating complex functions accurately.
