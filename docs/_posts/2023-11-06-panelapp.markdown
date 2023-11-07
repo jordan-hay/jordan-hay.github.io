@@ -1,0 +1,141 @@
+---
+layout: post
+title:  Creating an Interactive Flood Vulnerability Dashboard for New York City Neighborhoods with Panel Library in Python
+date:   2023-11-06 06:25:17 -0800
+categories: jekyll update
+---
+{% include my_panel_app.html %}
+## Introduction
+
+Our [previous blog](https://jordan-hay.github.io/jekyll/update/2023/11/05/geopandas.html) introduced a Python application that allowed users to select a neighborhood and view a line chart depicting the flooding categories within that area. In this follow-up, we'll enhance this application by adding an interactive map feature that displays neighborhood divisions and annotations. This interactive dashboard, powered by Panel, will provide users with a more comprehensive understanding of New York City's neighborhoods and their flood vulnerabilities. In this blog post, we'll walk you through the code used to develop the dashboard and explain its key components.
+
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Creating_an_Interactive_Flood_Vulnerability_Dashboard_for_New_York_City_Neighborhoods_with_Panel_Library_in_Python.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+
+## Libraries Used
+
+Before we dive into the code, let's briefly introduce the Python libraries used in this project:
+
+- **Panel (pn)**: Panel is a high-level app and dashboarding solution that allows you to create interactive web apps with minimal code.
+
+- **Plotly Express (px)**: Plotly Express is a Python graphing library that makes it easy to create interactive plots and charts.
+
+- **Pandas (pd)**: Pandas is a popular data manipulation library that simplifies data analysis and preparation.
+
+- **GeoPandas (gpd)**: GeoPandas extends Pandas to enable working with geospatial data. It simplifies the manipulation and analysis of geographic data.
+
+- **Shapely**: Shapely is a Python library for the manipulation and analysis of geometric objects. In this project, it's used to create subsections of a neighborhood for mapping.
+
+- **Matplotlib**: Matplotlib is a versatile plotting library used for creating static plots and maps.
+
+## Interactive Stormwater Flooding Dashboard
+
+In this project, we aim to provide an interactive dashboard that allows users to explore stormwater flooding data and visualize the potential impact of extreme flooding with a sea level rise scenario. We will break down the main components of the code used to create this dashboard.
+
+### Data Loading
+
+The first step is to load the necessary data. The data includes information about neighborhoods and stormwater flooding. This data is typically obtained from various sources, such as government agencies, and is loaded into Pandas DataFrames for analysis.
+
+```python
+import panel as pn
+import plotly.express as px
+import pandas as pd
+import geopandas as gpd
+import shapely
+import matplotlib.pyplot as plt
+
+pn.extension('plotly')
+```
+
+### Data Visualization
+
+We use Plotly Express to create an interactive line chart that displays the flooding data for a selected neighborhood. The `plot_neighborhood` function generates this visualization.
+
+```python
+def plot_neighborhood(neighborhood):
+    fig = px.line(df[df['Neighborhood'] == neighborhood], x='Section', y=['Nuisance', 'Deep', 'High Tide'])
+    fig.update_layout(title='Stormwater Flood Map - Extreme Flood with 2080 Sea Level Rise')
+    fig.update_layout(yaxis_title='Fraction')
+    fig.update_layout(legend_title_text='Flooding Category')
+    fig.update_layout(width=600)
+    fig.update_layout(title_font=dict(size=14))
+    fig.update_layout(legend=dict(orientation="h", x=0.1, y=1.1,font=dict(size=8)))
+    return fig
+```
+
+### Geospatial Mapping
+
+We also create a geospatial map to display subsections of a selected neighborhood. The `show_map` function generates this map. It uses GeoPandas to manipulate geospatial data and Matplotlib for plotting.
+
+```python
+def show_map(neighborhood):
+    nbhdstar = nbhds[nbhds['FIRST_UHF_'] == neighborhood]
+
+    rows, cols = 5, 5
+    min_x, min_y, max_x, max_y = nbhdstar.total_bounds
+    width = (max_x - min_x) / cols
+    height = (max_y - min_y) / rows
+
+    # Create an empty GeoDataFrame to store all subsections
+    all_subsections_gdf = gpd.GeoDataFrame(columns=['geometry'], crs=nbhdstar.crs)
+
+    # Iterate through rows and columns to create and add subsections to the all_subsections_gdf
+    counter = 0
+    for row in range(rows):
+        for col in range(cols):
+            counter += 1
+            left = min_x + col * width
+            right = left + width
+            top = max_y - row * height
+            bottom = top - height
+            subsection = shapely.geometry.box(left, bottom, right, top)
+            subsection_gdf = gpd.GeoDataFrame({'geometry': [subsection]}, crs=nbhdstar.crs)  # Set CRS for each subsection
+            all_subsections_gdf = gpd.GeoDataFrame(pd.concat([all_subsections_gdf, subsection_gdf], ignore_index=True))
+
+    # Plot the original GeoDataFrame and all subsections
+    fig, ax = plt.subplots(figsize=(2, 2));
+
+    # Plot the original GeoDataFrame
+    nbhdstar.plot(ax=ax, color='black', alpha=0.5, edgecolor='k');
+
+    # Plot all subsections
+    all_subsections_gdf.plot(ax=ax, color='white', alpha=0.2, edgecolor='k')
+
+    # Annotate each subsection with a counter
+    for idx, geom in enumerate(all_subsections_gdf['geometry']):
+        x, y = geom.centroid.coords[0]  # Get the centroid of the subsection
+        ax.annotate(str(idx + 1), xy=(x, y), ha='center', va='center', fontsize=10);
+    ax.set_aspect('equal')
+    ax.set_axis_off();
+    #plt.title(neighborhood)
+    show = False
+    plt.close(fig)
+    return fig
+```
+
+### Interactive Widgets
+
+To make the dashboard interactive, we use Panel widgets. Users can select a neighborhood from a dropdown menu, and the visualizations are updated accordingly. The `neighborhood_dropdown` widget allows users to select a neighborhood, and `update_plot` and `update_map` functions update the visuals based on the selected neighborhood.
+
+```python
+neighborhood_dropdown = pn.widgets.Select(name='', options=sorted(df['Neighborhood'].unique().tolist()))
+plot = pn.panel(plot_neighborhood(neighborhood_dropdown.value))
+
+@pn.depends(neighborhood=neighborhood_dropdown.param.value)
+def update_plot(neighborhood):
+    return plot_neighborhood(neighborhood)
+
+@pn.depends(neighborhood=neighborhood_dropdown.param.value)
+def update_map(neighborhood):
+    return show_map(neighborhood)
+
+dashboard = pn.Column(neighborhood_dropdown, pn.Row(update_plot, update_map))
+```
+
+## Conclusion
+
+In this blog post, we've demonstrated how to create an interactive dashboard for exploring stormwater flooding data using Python. By combining data visualization libraries like Plotly Express, geospatial analysis with GeoPandas, and interactive widgets with Panel, we've built a powerful tool for visualizing and analyzing stormwater flooding data.
+

@@ -29,6 +29,9 @@ The ["Community Health Survey GIS Data"](https://www.nyc.gov/site/doh/data/data-
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
+<a>
 {% include geopandas2.html %}
+</a>
+
 ### Conclusion
 The use of Geopandas and Python in this New York City flood vulnerability analysis has unveiled precise insights into the city's resilience against sea level rise and extreme weather events. These tools have efficiently dissected data to show the vulnerabilities of specific neighborhoods, ranging from minor inundations to profound flooding.
