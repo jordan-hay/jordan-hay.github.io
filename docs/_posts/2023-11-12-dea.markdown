@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  Data Envelopment Analysis (DEA) Analysis in Python
+title:  Data Envelopment Analysis (DEA) in Python
 date:   2023-11-12 06:25:17 -0800
 categories: jekyll update
 ---
