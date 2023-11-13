@@ -7,6 +7,12 @@ categories: jekyll update
 
 # Introduction
 
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Data_Envelopment_Analysis_(DEA)_Analysis_in_Python.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+
 In this blog post, we'll explore Data Envelopment Analysis (DEA) using Python. DEA is a powerful method for assessing the relative efficiency of decision-making units. We'll use the Gurobi optimization library for our analysis.
 
 <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
