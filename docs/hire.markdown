@@ -1,7 +1,8 @@
 ---
 layout: page
 menu: Hire Jordan
-title: Contact Jordan Hay
+title: Hire Jordan
+pagetitle: Contact Jordan Hay
 
 permalink: /Hire/
 ---
