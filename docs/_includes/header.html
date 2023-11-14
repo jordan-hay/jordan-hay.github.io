@@ -1,12 +1,14 @@
-<header class="site-header">
+<header class="site-header" role="banner">
+<link rel="stylesheet" href="/assets/css/styles.css">
 
-  <div class="wrapper">
+ <div class="wrapper">
     {%- assign default_paths = site.pages | map: "path" -%}
     {%- assign page_paths = site.header_pages | default: default_paths -%}
-    {%- assign titles_size = site.pages | map: 'title' | join: '' | size -%}
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">{{ site.title | escape }}</a>
 
-    {%- if titles_size > 0 -%}
+
+
+    {%- if page_paths -%}
       <nav class="site-nav">
         <input type="checkbox" id="nav-trigger" class="nav-trigger" />
         <label for="nav-trigger">
@@ -20,12 +22,27 @@
         <div class="trigger">
           {%- for path in page_paths -%}
             {%- assign my_page = site.pages | where: "path", path | first -%}
-            {%- if my_page.title -%}
-            <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.title | escape }}</a>
-            {%- endif -%}
+{% unless my_page.exclude %}            
+{%- if my_page.menu -%}
+{% if my_page.menu == "Hire Jordan" %}
+<a class="page-link orange-background" href="{{ my_page.url | relative_url }}">{{ my_page.menu | escape }}</a>
+
+{%else %}
+            <a class="page-link" href="{{ my_page.url | relative_url }}">{{ my_page.menu | escape }}</a>
+{% endif %}
+{%- endif -%}
+{% endunless %}
           {%- endfor -%}
         </div>
       </nav>
     {%- endif -%}
+
   </div>
+
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+{% if page.mermaid %}
+  {% include mermaid.html %}
+{% endif %}
+
 </header>
