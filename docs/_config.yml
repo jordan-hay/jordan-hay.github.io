@@ -12,7 +12,10 @@ description: >
 # Build settings
 
 theme: minima
+
+# other
 google_analytics: G-5B0DKKPXG6
+copyright: Jordan Hay LLC
 
 plugins:
   - jekyll-feed
