@@ -5,7 +5,7 @@ date:   2023-08-07 06:25:17 -0800
 categories: jekyll update
 category:
 ---
-![image tooltip here](/assets/counter.PNG){: width="500" }
+![image tooltip here](/assets/images/counter.PNG){: width="500" }
 
 
 <a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Creating_Dynamic_Text_Video_Clips_with_Python_and_MoviePy.ipynb
