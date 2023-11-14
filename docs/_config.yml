@@ -25,6 +25,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: https://jordan-hay.github.io
 twitter_username: 
 github_username:  jordan-hay
+google_analytics: G-4Y6DY2E6LD
 
 # Build settings
 theme: minima
