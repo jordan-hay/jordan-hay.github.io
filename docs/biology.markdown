@@ -1,7 +1,8 @@
 ---
 layout: page
-title: Biology for Amplification
-menu: Biology for Amplification
+title: BioChem
+menu: BioChem
+pagetitle: Biochemistry for Amplification
 
 permalink: /Biology/
 ---
