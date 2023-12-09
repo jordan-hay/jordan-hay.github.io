@@ -5,7 +5,7 @@ date:   2023-12-08 06:25:17 -0800
 categories: jekyll update technology
 ---
 ## Recap: Setting the Stage
-In the [previous blog post](https://jordan-hay.github.io/jekyll/update/2023/12/08/raspbpi.html.html), we laid the groundwork by guiding you through Raspberry Pi's installation, from obtaining the Raspberry Pi OS to configuring a Jupyter Notebook. We concluded with a hands-on LED control project, marking the beginning of your journey into the world of DIY electronics. 
+In the [previous blog post](https://jordan-hay.github.io/jekyll/update/technology/2023/12/07/raspbpi.html), we laid the groundwork by guiding you through Raspberry Pi's installation, from obtaining the Raspberry Pi OS to configuring a Jupyter Notebook. We concluded with a hands-on LED control project, marking the beginning of your journey into the world of DIY electronics. 
 
 ## Unleashing GPIO Power: A Guide to `argparse` and Custom LED Control
 
