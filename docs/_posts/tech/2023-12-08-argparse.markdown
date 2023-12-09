@@ -1,0 +1,96 @@
+---
+layout: post
+title:  "Mastering LED Control: Command-Line Precision with `argparse` in Jupyter Notebook"
+date:   2023-12-08 06:25:17 -0800
+categories: jekyll update technology
+---
+## Recap: Setting the Stage
+In the [previous blog post](https://jordan-hay.github.io/jekyll/update/2023/12/08/raspbpi.html.html), we laid the groundwork by guiding you through Raspberry Pi's installation, from obtaining the Raspberry Pi OS to configuring a Jupyter Notebook. We concluded with a hands-on LED control project, marking the beginning of your journey into the world of DIY electronics. 
+
+## Unleashing GPIO Power: A Guide to `argparse` and Custom LED Control
+
+In this blog post, we'll delve into the intricacies of the provided `gpio_control.py` script, exploring how the `argparse` module empowers you to finely customize LED control on your Raspberry Pi. Let's understand each section of the script and how you can leverage `argparse` for a more dynamic user experience.
+
+### Understanding `argparse`
+
+`argparse` is a Python module that simplifies the process of parsing command-line arguments. It allows you to create user-friendly command-line interfaces, making your scripts more interactive and versatile. In the context of our script, `argparse` enables users to define GPIO pin numbers, control durations, and the number of repeats directly from the command line.
+
+### The `gpio_control.py` Script
+
+The provided script, `gpio_control.py`, is a powerful tool for controlling a GPIO pin on your Raspberry Pi. Let's break down its components:
+
+```python
+%%file gpio_control.py
+import argparse
+import RPi.GPIO as GPIO
+import time
+```
+
+- **argparse**: The first line imports the `argparse` module, setting the stage for creating a user-friendly command-line interface.
+
+- **RPi.GPIO**: This module allows interaction with the GPIO pins on the Raspberry Pi. It is initialized as `GPIO` for convenience.
+
+- **time**: This module provides various time-related functions, allowing us to introduce delays in our script.
+
+```python
+def setup_gpio(pin):
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(pin, GPIO.OUT)
+```
+
+- **setup_gpio(pin)**: This function initializes the GPIO pin. It takes a pin number as an argument, sets the GPIO mode to Broadcom (BCM), and configures the specified pin as an output.
+
+```python
+def toggle_gpio(pin, sleep_time_on, sleep_time_off):
+    GPIO.output(pin, GPIO.HIGH)  # Turn on
+    time.sleep(sleep_time_on)
+    GPIO.output(pin, GPIO.LOW)  # Turn off
+    time.sleep(sleep_time_off)
+```
+
+- **toggle_gpio(pin, sleep_time_on, sleep_time_off)**: This function toggles the state of the GPIO pin. It turns the pin on, sleeps for the specified duration (`sleep_time_on`), turns the pin off, and then sleeps for another specified duration (`sleep_time_off`).
+
+```python
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Control a GPIO pin with specified sleep times.")
+    parser.add_argument("-p", "--gpio_pin", type=int, default=6, help="GPIO pin number to control.")
+    parser.add_argument("-on", "--sleep_time_on", type=float, default=1.0, help="Sleep time when the GPIO pin is turned on.")
+    parser.add_argument("-of", "--sleep_time_off", type=float, default=1.0, help="Sleep time when the GPIO pin is turned off.")
+    parser.add_argument("-n", "--number", type=int, default=3.0, help="Number of repeats.")
+
+    args = parser.parse_args()
+
+    setup_gpio(args.gpio_pin)
+    for _ in range(int(args.number)):
+        toggle_gpio(args.gpio_pin, args.sleep_time_on, args.sleep_time_off)
+
+    GPIO.cleanup()
+```
+
+- **if __name__ == "__main__"**: This block ensures that the script's main functionality is executed only when the script is run directly, not when it's imported as a module.
+
+- **parser = argparse.ArgumentParser(...)**: Here, we create an ArgumentParser object to define the command-line interface for our script. It includes arguments for GPIO pin number (`gpio_pin`), sleep time when the GPIO pin is on (`sleep_time_on`), sleep time when the GPIO pin is off (`sleep_time_off`), and the number of repeats (`number`).
+
+- **args = parser.parse_args()**: This line parses the command-line arguments provided by the user.
+
+- **setup_gpio(args.gpio_pin)**: The GPIO pin is set up based on the user-provided or default pin number.
+
+- **for _ in range(int(args.number))**: This loop repeats the toggling of the GPIO pin for the specified number of times.
+
+- **toggle_gpio(args.gpio_pin, args.sleep_time_on, args.sleep_time_off)**: The GPIO pin is toggled based on the user-provided or default sleep times.
+
+- **GPIO.cleanup()**: Finally, this line ensures that the GPIO resources are properly released when the script finishes.
+
+### Running the Script
+
+To run the script, open a terminal on your Raspberry Pi and execute the following command:
+
+```bash
+python gpio_control.py --gpio_pin 6 --sleep_time_on 2.0 --sleep_time_off 1.0 -n 2
+```
+
+This command utilizes the flexibility provided by `argparse` to customize the GPIO pin, sleep times, and the number of repeats.
+
+### Conclusion
+
+With `argparse` and the `gpio_control.py` script, you have a powerful tool for dynamic LED control on your Raspberry Pi. The ability to specify parameters directly from the command line enhances the script's versatility, making it adaptable to various projects. Explore different combinations of GPIO pins and sleep times, and let your LED control experiments thrive.
