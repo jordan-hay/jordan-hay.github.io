@@ -1,0 +1,203 @@
+---
+layout: post
+title:  "Analyzing Gene Expression with STAR and Pysam"
+date:   2023-12-19 06:25:17 -0800
+categories: jekyll update biology
+---
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Analyzing_Gen_ Expression_with_STAR_and_Pysam.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+## Introduction
+
+In the realm of genomics, understanding gene expression patterns is crucial for unraveling the mysteries of cellular function. This blog post will delve into a comprehensive analysis pipeline utilizing STAR, a powerful tool for Spliced Transcripts Alignment to a Reference, combined with the Python library Pysam. The focus is on a specific dataset with the Sequence Read Archive (SRA) ID "SRR639771."
+
+<div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>                <div id="94c80b42-d03a-4181-8a1b-f7d9827c3976" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("94c80b42-d03a-4181-8a1b-f7d9827c3976")) {                    Plotly.newPlot(                        "94c80b42-d03a-4181-8a1b-f7d9827c3976",                        [{"line":{"color":"blue"},"mode":"lines","name":"RPKM","x":["12","8","3","11","2","5","7","1","13","10","6","14","9","4","Mt"],"y":[0.5742147359182084,0.5704393829332083,0.5460568042972141,0.5443886646567271,0.5438029145366949,0.5358298820231748,0.5188159002193092,0.5093725260637219,0.47450494166857676,0.4606430306956497,0.4489952940056831,0.3878361401901963,0.30431965308752607,0.3003848174603695,0.013036688473058845],"type":"scatter"},{"line":{"color":"red"},"mode":"lines","name":"Counts","x":["12","8","3","11","2","5","7","1","13","10","6","14","9","4","Mt"],"y":[325.46639418710265,306.055775839281,294.5374742149897,289.68554047730464,310.9891745602165,318.27645914396885,277.0975545621877,311.7447631324525,301.19658976930793,286.000734484025,258.9523460410557,202.63493282149713,187.50463248919087,171.42246330567966,15.533333333333333],"yaxis":"y2","type":"scatter"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"yaxis":{"title":{"text":"Reads Per kb per Million Mapped Reads","font":{"color":"blue","size":20}}},"yaxis2":{"title":{"text":"Counts","font":{"color":"red","size":20}},"overlaying":"y","side":"right"},"xaxis":{"title":{"text":"Chromosome","font":{"size":20}}}},                        {"responsive": true}                    )                };                            </script>        </div>
+
+## Setting Up the Environment
+
+Before diving into the code, let's set the stage. The necessary genomic data is fetched from Ensembl, specifically the GTF (Gene Transfer Format) and FASTA files for *Cryptococcus neoformans var. grubii H99*. The genome is stored locally in the `GENOME_DIR` directory.
+
+```python
+id="SRR639771" # Sequence Read Archive ID (NCBI)
+GENOME_DIR="/content/genome/"
+FASTQ_DIR="/content/fastq/"
+GTF_URL="ftp://ftp.ensemblgenomes.org/pub/release-39/fungi/gtf/fungi_basidiomycota1_collection/cryptococcus_neoformans_var_grubii_h99/Cryptococcus_neoformans_var_grubii_h99.CNA3.39.gtf.gz"
+FASTA_URL="ftp://ftp.ensemblgenomes.org/pub/release-39/fungi/fasta/fungi_basidiomycota1_collection/cryptococcus_neoformans_var_grubii_h99/dna/Cryptococcus_neoformans_var_grubii_h99.CNA3.dna.toplevel.fa.gz"
+FASTAGZ=GENOME_DIR+FASTA_URL.split("/")[-1]
+GTFGZ=GENOME_DIR+GTF_URL.split("/")[-1]
+FASTA=FASTAGZ.replace(".gz","")
+GTF=GTFGZ.replace(".gz","")
+STAR_PATH="/content/STAR/source/STAR" #where to install Spliced Transcripts Alignment to a Reference
+STAR_OUT="/content/starout/"
+```
+
+## Downloading and Preprocessing
+
+The next step involves downloading the required files and preparing the data for analysis. The SRA toolkit is employed for fetching the raw sequencing data, which is then converted to FASTQ format using `fastq-dump`.
+
+```python
+!apt install sra-toolkit &>/dev/null
+```
+
+```bash
+%%bash -s "$id" "$FASTQ_DIR"
+prefetch ${1} &>/dev/null
+fastq-dump --outdir ${2} --gzip --skip-technical  --readids --read-filter pass --dumpbase --split-3 --clip /content/${1}/${1}.sra &>/dev/null
+```
+
+```bash
+%%bash -s "$id"
+zcat /content/fastq/${1}_pass_1.fastq.gz | head
+```
+```python
+!pip install pysam &>/dev/null
+```
+
+```bash
+%%bash
+git clone https://github.com/alexdobin/STAR.git && make -C STAR/source &>/dev/null
+```
+
+## Genome Indexing with STAR
+
+STAR requires a pre-built genome index for efficient alignment. The GTF and FASTA files are used to generate this index.
+
+```bash
+%%bash -s "$GENOME_DIR" "$STAR_OUT" "$GTF_URL" "$FASTA_URL" "$GTFGZ" "$FASTAGZ" "$GTF" "$FASTA" "$STAR_PATH"
+
+mkdir -p "${1}"
+mkdir -p "${2}"
+
+if wget --quiet --directory-prefix="${1}" "${3}"; then
+    echo "First file downloaded successfully."
+else
+    echo "Error downloading the first file. Exiting."
+    exit 1
+fi
+
+if wget --quiet --directory-prefix="${1}" "${4}"; then
+    echo "Second file downloaded successfully."
+else
+    echo "Error downloading the second file. Exiting."
+    exit 1
+fi
+
+gunzip "${5}"
+gunzip "${6}"
+
+${9} --runMode genomeGenerate --genomeDir "${1}" --genomeFastaFiles "${8}" --sjdbGTFfile "${7}" --outFileNamePrefix "${2}/genome_" --genomeSAindexNbases 11 --outSAMtype BAM SortedByCoordinat
+```
+
+## Aligning Reads with STAR
+
+With the genome indexed, the next step involves aligning the sequenced reads to the reference genome using STAR.
+
+```bash
+%%bash -s "$GENOME_DIR" "$id" "$FASTQ_DIR" "$STAR_PATH" "$STAR_OUT"
+
+${4} \
+--genomeDir "${1}" \
+--readFilesIn "${3}${2}_pass_1.fastq.gz" \
+--readFilesCommand zcat \
+--outBAMsortingBinsN 200 \
+--runThreadN 2 \
+--limitBAMsortRAM 1795207491 \
+--outSAMtype BAM SortedByCoordinate \
+--outFileNamePrefix ${5} \
+```
+
+## Quantifying Gene Expression with Pysam
+
+Now, we transition to Python with pysam to quantify gene expression. The code snippet below demonstrates how to extract gene-level read counts and calculate Reads Per Kilobase of exon per Million mapped reads (RPKM).
+
+```python
+import pysam
+pysam.index(STAR_OUT+"Aligned.sortedByCoord.out.bam"))
+
+
+bam_file = STAR_OUT+ "Aligned.sortedByCoord.out.bam"
+bai_file = STAR_OUT+ "Aligned.sortedByCoord.out.bam.bai"
+gtf_file = GTF
+# Create a pysam AlignmentFile object with the index file
+samfile1 = pysam.AlignmentFile(bam_file, "rb", index_filename=bai_file)
+gene_read_counts = []
+
+with open(gtf_file, "r") as gtf:
+    for line in gtf:
+        if line.startswith("#"):
+            continue  # Skip comments in GTF file
+
+        #if 'exon_number "1"' in line and line[0:2]=="Mt":
+        fields = line.strip().split("\t")
+        feature = fields[2]
+        if feature == 'exon':
+            chromosome = fields[0]#.replace("chr","")
+
+            start = int(fields[3])
+            end = int(fields[4])
+            gene_name_full = fields[8]
+
+            nameparts=gene_name_full.split(";")
+            gene_id=nameparts[0].split(" ")[1].replace("\"","")
+
+            transcript_id=nameparts[1].split(" ")[2].replace("\"","")
+            exon_number=nameparts[2].split(" ")[2].replace("\"","")
+
+            #print(chromosome,feature,start,end,gene_name_full)
+            # Count reads that fall between start and end coordinates of the exon
+            try:
+              read_count = samfile1.count(chromosome, start, end)
+              gene_read_counts.append((feature,chromosome, gene_id,transcript_id,exon_number,end-start+1,read_count))
+            except:
+              w=1
+```
+
+## Visualizing Results
+
+The final section involves visualizing the results. We generate various plots, including bar charts depicting RPKM and raw read counts across different chromosomes.
+
+```python
+import pandas as pd
+df=pd.DataFrame(gene_read_counts,columns=['Feature','Chromosome','Gene ID','Transcript ID', 'Exon','Length','Counts'])
+df.head()
+```
+```python
+#Reads Per Kilobase of exon per Million mapped reads
+total_mapped_reads = samfile1.mapped
+df['RPKM'] = (df.Counts / df.Length) * (1e6 / total_mapped_reads)
+```
+
+```python
+P=pd.pivot_table(data=df,values="RPKM",index=['Chromosome','Feature','Gene ID','Transcript ID'],aggfunc='mean')
+P.sort_values(by='RPKM',ascending=False).head(20)
+```
+
+```python
+df.groupby(by = 'Gene ID').mean(numeric_only = True).sort_values(by='RPKM',ascending=False).head(20)
+```
+
+```python
+data=df.groupby(by = 'Chromosome').mean(numeric_only = True).sort_values(by='RPKM',ascending=False).reset_index()
+data
+```
+
+```python
+data.plot.bar(y='RPKM',x='Chromosome');
+
+data.plot.bar(y='Counts',x='Chromosome');
+
+import matplotlib.pyplot as plt
+
+fig, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax1.plot(data['Chromosome'], data['RPKM'], 'b-')
+ax2.plot(data['Chromosome'], data['Counts'], 'r-')
+ax1.set_ylabel('Reads Per kb per Million Mapped Reads', color='blue')
+ax2.set_ylabel('Counts', color='red')
+ax1.set_xlabel('Chromosome')
+plt.show()
+```
+## Conclusion
+In conclusion, this analysis pipeline seamlessly integrates command-line tools like STAR with Python libraries such as pysam, providing a comprehensive approach to gene expression analysis. Understanding and adapting this pipeline can help extract meaningful insights from genomic data.
