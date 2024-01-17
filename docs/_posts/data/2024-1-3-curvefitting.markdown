@@ -78,7 +78,7 @@ The deviation constraints are formulated as follows:
 
 $$a \cdot x[i] + b + u[i] - v[i] = y[i]$$
 
-To derive the objective function, we aim to minimize the total positive deviations (\\(u\\)) and total negative deviations (\\(v\\)) across all observations:
+To derive the objective function, we aim to minimize the total positive deviations ($u$) and total negative deviations ($v$) across all observations:
 
 $$ \text{Minimize } \sum_{i} (u[i] + v[i]) $$
 
