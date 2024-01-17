@@ -16,7 +16,7 @@ Curve fitting plays a crucial role in understanding relationships between variab
 
 ## Model Setup:
 
-We begin by creating a Gurobi model named 'CurveFitting' to represent our curve fitting problem. Our objective is to find the coefficients 'a' and 'b' for the linear curve $f(x) = a \cdot x + b$ that best fits a given set of data points $(x[i], y[i])$.
+We begin by creating a Gurobi model named 'CurveFitting' to represent our curve fitting problem. Our objective is to find the coefficients 'a' and 'b' for the linear curve \\(f(x) = a \cdot x + b\\) that best fits a given set of data points \\((x[i], y[i])\\).
 
 ```python
 # Import Gurobi library
@@ -70,15 +70,15 @@ This blog has provided a practical demonstration of mathematical modeling for cu
 
 The objective function in our curve fitting model aims to minimize the total positive and negative deviations between the observed data points and the predicted values from our linear curve. Let's derive this objective function step by step.
 
-The linear curve is represented by the function $f(x) = a \cdot x + b$, where 'a' is the coefficient of the linear term and 'b' is the constant term.
+The linear curve is represented by the function \\(f(x) = a \cdot x + b\\), where 'a' is the coefficient of the linear term and 'b' is the constant term.
 
-For each observation $(x[i], y[i])$, we introduce two non-negative continuous variables, $u[i]$ and $v[i]$, to represent the positive and negative deviations, respectively, between the observed $y[i]$ and the predicted $f(x[i])$.
+For each observation \\((x[i], y[i])\\), we introduce two non-negative continuous variables, \\(u[i]\\) and \\(v[i]\\), to represent the positive and negative deviations, respectively, between the observed \\(y[i]\\) and the predicted \\(f(x[i])\\).
 
 The deviation constraints are formulated as follows:
 
 $$a \cdot x[i] + b + u[i] - v[i] = y[i]$$
 
-To derive the objective function, we aim to minimize the total positive deviations ($u$) and total negative deviations ($v$) across all observations:
+To derive the objective function, we aim to minimize the total positive deviations (\\(u\\)) and total negative deviations (\\(v\\)) across all observations:
 
 $$ \text{Minimize } \sum_{i} (u[i] + v[i]) $$
 
