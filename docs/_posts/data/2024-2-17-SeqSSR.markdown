@@ -1,0 +1,181 @@
+---
+layout: post
+title:  "Sequential and Adjusted ANOVA in Regression Analysis"
+date:   2024-2-17 07:25:17 -0800
+categories: jekyll update data
+---
+
+
+## Introduction
+
+Regression analysis is a fundamental statistical technique used to model the relationship between a dependent variable and one or more independent variables. Analysis of Variance (ANOVA) provides valuable insights into the significance of individual variables in a regression model. In this guide, we will explore the theoretical background and practical implementation of Sequential (Seq) and Adjusted (Adj) ANOVA in Python using the Statsmodels library.
+
+## Theoretical Background
+
+### ANOVA in Regression
+
+In regression analysis, ANOVA is employed to assess the overall significance of the model and the individual contributions of predictor variables. It decomposes the total sum of squares (SST) into explained sum of squares (SSR) and residual sum of squares (SSE), allowing us to quantify how well the model fits the data.
+
+The ANOVA decomposition can be expressed as:
+
+\\(
+SST = SSR + SSE
+\\)	 	
+
+### Sequential ANOVA
+
+Sequential ANOVA, also known as Type I SS (sums of squares), involves adding variables to the model one at a time. It evaluates the change in SSR as each variable is introduced, providing insights into the unique contribution of each predictor.
+
+The sequential sum of squares for variable $$X_i$$ is calculated as:
+
+\\(
+SeqSSR(X_i) = \sum_{j=1}^{i} (SSR(X_j \mid X_{j-1}))
+\\)
+
+Where $$SSR(X_j \mid X_{j-1})$$ is the incremental SSR when adding $$X_j$$ to the model with $$X_{j-1}$$ already present.
+
+
+
+### Adjusted ANOVA
+
+Adjusted ANOVA, or Type II SS, considers the impact of adding a variable while accounting for other variables already present in the model. This method provides adjusted measures of significance, addressing potential confounding effects.
+
+The adjusted sum of squares for variable $$X_i$$ is calculated as:
+
+\\(
+AdjSSR(X_i) = SSR(X_i \mid X_{-i})
+\\)
+
+Where $$X_{-i}$$ represents all variables except $$X_i$$, and $$SSR(X_i \mid X_{-i})$$ is the incremental SSR when adding $$X_i$$ to the model.
+
+## Implementation in Python
+
+### Dataset Loading and Preprocessing
+
+Let's start by loading the coolhearts dataset and preparing the data:
+
+```python
+import pandas as pd
+import numpy as np
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+from scipy.stats import t, f
+
+# Load the dataset
+df = pd.read_csv("https://online.stat.psu.edu/onlinecourses/sites/stat501/files/data/coolhearts.txt", sep='\t')
+df.columns = ['y', 'X1', 'Group', 'X2', 'X3']
+```
+
+### Building the Full Model
+
+Define the full model and perform both Sequential and Adjusted ANOVA:
+
+```python
+full_model = 'y ~ X1 + X2 + X3'
+
+# Sequential ANOVA
+SeqANOVA = sm.stats.anova_lm(ols(full_model, data=df).fit(), typ=1)
+
+# Adjusted ANOVA
+AdjANOVA = sm.stats.anova_lm(ols(full_model, data=df).fit(), typ=2)
+```
+
+### Understanding Model Statistics
+
+Now, let's delve into the statistics derived from the model:
+
+```python
+y = df.y
+y_hat = ols(full_model, data=df).fit().fittedvalues
+y_bar = df.y.mean()
+
+n = len(y_hat)
+p = ols(full_model, data=df).fit().df_model
+k = p + 1
+df_error = n - k
+
+SSR = np.sum((y_hat - y_bar)**2)
+SSE = np.sum((y_hat - y)**2)
+MSR = SSR / p
+MSE = SSE / df_error
+```
+
+These statistics include the explained and residual sums of squares, mean squares, and degrees of freedom.
+
+### Sequential and Adjusted Sums of Squares for Individual Variables
+
+Now, calculate SeqSSR and AdjSSR for each variable:
+
+```python
+SeqSSR_X1 = np.sum((ols('y ~ X1', data=df).fit().fittedvalues - y_bar)**2)
+SeqSSR_X2 = np.sum((ols('y ~ X1 + X2', data=df).fit().fittedvalues - y_bar)**2) - \
+            np.sum((ols('y ~ X1', data=df).fit().fittedvalues - y_bar)**2)
+SeqSSR_X3 = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2) - \
+            np.sum((ols('y ~ X1 + X2', data=df).fit().fittedvalues - y_bar)**2)
+
+AdjSSR_X1 = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2) - \
+             np.sum((ols('y ~ X2 + X3', data=df).fit().fittedvalues - y_bar)**2)
+AdjSSR_X2 = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2) - \
+             np.sum((ols('y ~ X1 + X3', data=df).fit().fittedvalues - y_bar)**2)
+AdjSSR_X3 = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2) - \
+             np.sum((ols('y ~ X1 + X2', data=df).fit().fittedvalues - y_bar)**2)
+```
+
+These calculations provide insights into how each variable contributes to the model's explanatory power.
+
+### Regression Coefficients and Statistics
+
+Explore regression coefficients, standard errors, t-statistics, and p-values:
+
+```python
+coefficients = ols(full_model, data=df).fit().params
+std_errors = ols(full_model, data=df).fit().bse
+t_stats = coefficients / std_errors
+p_values = ols(full_model, data=df).fit().pvalues
+```
+
+Understanding these values helps assess the significance and impact of each variable on the response.
+
+### F-Statistics and P-Values
+
+Calculate F-statistics and associated p-values:
+
+```python
+AdjF_X1 = AdjSSR_X1 / MSE
+AdjF_X2 = AdjSSR_X2 / MSE
+AdjF_X3 = AdjSSR_X3 / MSE
+
+SeqF_X1 = SeqSSR_X1 / MSE
+SeqF_X2 = SeqSSR_X2 / MSE
+SeqF_X3 = SeqSSR_X3 / MSE
+```
+
+These F-statistics aid in evaluating the overall significance of variables in the model.
+
+### Overall F-Statistic for Model Comparison
+
+Compute the overall F-statistic for comparing the full and reduced models:
+
+\\(
+F^*=\left( \dfrac{SSR(F)-SSR(R)}{df_R-df_F}\\right)\div\left( \dfrac{SSE(F)}{df_F}\right)
+\\)
+
+```python
+SSRF = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2)
+SSRR = np.sum((ols('y ~ X1', data=df
+
+).fit().fittedvalues - y_bar)**2)
+SSEF = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y)**2)
+
+df_full = n - k
+df_reduced = df_full + 2
+
+Fstar = \frac{{(SSRF - SSRR)}}{{(df_reduced - df_full)}} \div \frac{{SSEF}}{{df_full}}
+p_value = 1 - F.cdf(Fstar, df_reduced - df_full, df_full)
+```
+
+This statistic allows us to compare the full and reduced models and assess whether the inclusion of additional variables significantly improves model fit.
+
+## Conclusion
+
+We've explored the theoretical foundations and practical implementation of Sequential and Adjusted ANOVA in regression analysis using Python and Statsmodels. Understanding these concepts provides a deeper insight into the role of individual variables in a regression model, facilitating better-informed decision-making in statistical analysis.
