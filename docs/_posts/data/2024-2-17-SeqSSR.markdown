@@ -4,6 +4,10 @@ title:  "Sequential and Adjusted ANOVA in Regression Analysis"
 date:   2024-2-17 07:25:17 -0800
 categories: jekyll update data
 ---
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Sequential_Sum_of_Squares.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
 
 
 ## Introduction
