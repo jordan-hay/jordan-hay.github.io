@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Calculating Prediction Intervals in Regression Using Python Statsmodels"
+title:  "Calculating Prediction Intervals in Regression Using Python NumPy and Statsmodels"
 date:   2024-3-04 07:25:17 -0800
 categories: jekyll update data
 ---
@@ -52,7 +52,7 @@ alpha = 1 - sl
 model = ols(formula, data=df).fit()
 ```
 
-## 1. Manual Calculation with Formula
+## 1. Manual Calculation with Formulae and NumPy
 
 One way to calculate prediction intervals manually is by using the formulae:
 
