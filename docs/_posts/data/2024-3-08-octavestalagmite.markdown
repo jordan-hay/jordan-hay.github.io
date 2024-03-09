@@ -7,7 +7,7 @@ categories: jekyll update data
 <a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Genetic_Algorithm_Octave.ipynb
 ">
   
-# Introduction
+# Introduction 
 
 In this blog post, we will explore the application of a Genetic Algorithm (GA) to optimize the Stalagmite function. The Stalagmite function is a mathematical model that involves multiple variables and is known for its complex behavior. We'll employ the GA to find the optimal input values that maximize the output of this function.
 
