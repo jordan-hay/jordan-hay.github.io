@@ -5,7 +5,7 @@ date:   2024-4-30 07:25:17 -0800
 categories: jekyll update data
 ---
 
-<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Equidistant_POints.ipynb
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Equidistant_Points.ipynb
 ">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
