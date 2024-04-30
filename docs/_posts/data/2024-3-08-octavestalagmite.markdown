@@ -4,8 +4,12 @@ title:  "Optimizing the Stalagmite Function using Octave and Genetic Algorithm i
 date:   2024-3-08 07:25:17 -0800
 categories: jekyll update data
 ---
+
 <a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Genetic_Algorithm_Octave.ipynb
 ">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
   
 # Introduction 
 
