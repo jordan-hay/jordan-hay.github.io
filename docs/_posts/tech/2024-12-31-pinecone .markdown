@@ -1,0 +1,336 @@
+---
+layout: post
+title:  "Retrieval Augmented Generation: Integrating Pinecone and Language Models for Text Retrieval and Learning"
+date:   2024-12-31 06:25:17 -0800
+categories: jekyll update technology
+---
+
+This blog covers a technical pipeline for downloading PDFs, processing their content, and using machine learning models to answer questions based on the extracted information. The pipeline uses Pinecone for vector storage and retrieval, `sentence-transformers` for embedding generation, and `FLAN-T5` for question answering.
+
+### 1. **Download PDFs:**
+
+The following code downloads PDFs from specified URLs and saves them locally.
+
+```python
+import gdown
+urls =["https://labs.plb.ucdavis.edu/courses/bis/1c/text/Chapter1nf.pdf","https://labs.plb.ucdavis.edu/courses/bis/1c/text/Chapter2nf.pdf","https://labs.plb.ucdavis.edu/courses/bis/1c/text/Chapter3nf.pdf","https://labs.plb.ucdavis.edu/courses/bis/1c/text/Chapter4nf.pdf"]
+pdf_paths = []
+for i,url in enumerate(urls):
+  print(url)
+  pdf_path = '/content/file' + str(i) + '.pdf'
+  pdf_paths.append(pdf_path)
+
+  gdown.download(url,pdf_path)
+```
+
+### 2. **Install Dependencies:**
+
+This code installs the required libraries for PDF processing, vector storage, and machine learning.
+
+```bash
+!pip install pypdf &> /dev/null
+!pip install -U langchain langchain-community &> /dev/null
+!pip install "pinecone[grpc]" &> /dev/null
+!pip install pinecone pdfplumber sentence-transformers &> /dev/null
+```
+
+### 3. **Load Models:**
+
+Here, the code loads the necessary tokenizer and FLAN-T5 language model using Hugging Face's `transformers`.
+
+```python
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModelForCausalLM
+# Load tokenizer and model
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-small")
+tokenizer = AutoTokenizer.from_pretrained("google/flan-t5-large")
+modelg = AutoModelForSeq2SeqLM.from_pretrained("google/flan-t5-large")
+```
+
+### 4. **Process PDFs:**
+
+The `PyPDFLoader` from `langchain` is used to load and split the PDFs into smaller chunks. These chunks are then converted into text.
+
+```python
+from langchain.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+def process_pdf(file_paths):
+  texts = []
+  if type(file_paths) == str:
+    file_paths = [file_paths]
+
+  for file_path in file_paths:
+    loader = PyPDFLoader(file_path)
+    data = loader.load()
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    documents = text_splitter.split_documents(data)
+
+    textsf = [str(doc) for doc in documents]
+    texts.extend(textsf)  
+
+  return texts
+
+pdf_paths[0::]
+
+data=process_pdf(pdf_paths[0::])
+import random
+data = [{"id": "id"+str(i), "text": text} for i,text in enumerate(data)]
+```
+
+### 5. **Pinecone Setup:**
+
+The script initializes Pinecone and checks if indices exist. If not, it creates them for storing embeddings.
+
+```python
+import pinecone
+from pinecone import ServerlessSpec
+import pdfplumber
+from sentence_transformers import SentenceTransformer
+import time
+from pinecone.grpc import PineconeGRPC as Pinecone
+
+api_key = "pcsk_4vEERWdksfweTTTE23423EsdMc7hob"  # Replace with your Pinecone API key
+
+pc = Pinecone(api_key=api_key)
+
+try:
+  pc.delete_index("modelst")
+except:
+  pass
+
+try:
+  pc.delete_index("modelpine")
+except:
+  pass
+
+model_st = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
+```
+
+### 6. **Create Pinecone Index:**
+
+The code creates an index in Pinecone to store the text embeddings, if it doesn’t exist.
+
+```python
+index_name = "modelst"
+
+if index_name not in pc.list_indexes().names():
+    pc.create_index(
+        name=index_name,
+        dimension=384,  # Dimension of the embeddings from the model
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")
+    )
+
+index_modelst = pc.Index(index_name)
+while not pc.describe_index(index_name).status['ready']:
+    time.sleep(1)
+```
+
+### 7. **Generate and Upsert Embeddings:**
+
+The script splits the text into parts, encodes them into embeddings, and uploads them to Pinecone.
+
+```python
+splits = 4
+spliti=len(data)//splits
+data_len = len(data)
+
+embeddings_list = []
+for i in range(splits):
+    start_idx = i * (data_len // splits)
+    end_idx = (i + 1) * (data_len // splits) if i < splits - 1 else data_len
+    text_subset = [d['text'] for d in data[start_idx:end_idx]]
+    embeddings = model_st.encode(text_subset)
+    embeddings_list.append(embeddings)
+
+embeddings_list = [embedding for sublist in embeddings_list for embedding in sublist]
+
+records = [
+    {"id": d['id'], "values": e.tolist(), "metadata": {'text': d['text']}}
+    for d, e in zip(data, embeddings_list)
+]
+
+batch_size = 100
+num_batches = len(records) // batch_size + (1 if len(records) % batch_size != 0 else 0)
+
+for i in range(num_batches):
+    start = i * batch_size
+    end = start + batch_size
+    batch = records[start:end]
+    index_modelst.upsert(vectors=batch, namespace="modelst")
+
+time.sleep(10)
+```
+
+### 8. **Create Another Pinecone Index:**
+
+A second index, `modelpine`, is created and used for additional text embeddings.
+
+```python
+index_name = "modelpine"
+
+if index_name not in pc.list_indexes().names():
+    pc.create_index(
+        name=index_name,
+        dimension=1024,
+        metric="cosine",
+        spec=ServerlessSpec(cloud="aws", region="us-east-1")
+    )
+
+index_modelpine = pc.Index(index_name)
+while not pc.describe_index(index_name).status['ready']:
+    time.sleep(1)
+```
+
+### 9. **Generate and Upsert Embeddings for the Second Index:**
+
+The second set of embeddings is generated and uploaded to the second Pinecone index.
+
+```python
+splits = 50
+spliti=len(data)//splits
+data_len = len(data)
+
+embeddings_list = []
+for i in range(splits):
+    start_idx = i * (data_len // splits)
+    end_idx = (i + 1) * (data_len // splits) if i < splits - 1 else data_len
+    text_subset = [d['text'] for d in data[start_idx:end_idx]]
+    embeddings = pc.inference.embed(
+    "multilingual-e5-large",
+    inputs=text_subset,
+    parameters={"input_type": "passage"}
+    )
+    embeddings_list.append(embeddings.data)
+    time.sleep(2)
+
+embeddings_list = [embedding for sublist in embeddings_list for embedding in sublist]
+
+records = [
+    {"id": d['id'], "values": e.values, "metadata": {'text': d['text']}}
+    for d, e in zip(data, embeddings_list)
+]
+
+batch_size = 100
+num_batches = len(records) // batch_size + (1 if len(records) % batch_size != 0 else 0)
+
+for i in range(num_batches):
+    start = i * batch_size
+    end = start + batch_size
+    batch = records[start:end]
+    index_modelpine.upsert(vectors=batch, namespace="modelpine")
+
+time.sleep(10)
+```
+
+### 10. **Query the Index:**
+
+The following code demonstrates how to query the Pinecone index for similar texts and generate answers using the language model.
+
+```python
+query = "what is a plant"
+query = "what is the proton pump"
+query_embedding = model_st.encode([query]).tolist()
+
+results = index_modelst.query(
+    namespace="modelst",
+    vector=query_embedding[0],
+    top_k=3,
+    include_values=False,
+    include_metadata=True
+)
+
+for match in results['matches']:
+    print('_'*100)
+    print(match['metadata']['text'].replace("page_content=",""))
+
+max_length=300
+import numpy as np
+max_length=np.inf
+retrieved_texts = " ".join([match['metadata']['text'] for match in results['matches']])
+retrieved_texts = tokenizer.decode(tokenizer(retrieved_texts, truncation=False,max_length = max_length)['input_ids'])
+
+prompt = f"Based only on the information i give you here (do not search anywhere else): {retrieved_texts}. Can you display the question exactly as i give it to you and answer the question: '{query}'?"
+import textwrap
+print(textwrap.fill(prompt, width=80))
+```
+
+### 11. **Answer the Query Using a Model:**
+
+This part generates a response based on the retrieved text.
+
+```python
+retrieved_texts = " ".join([match['metadata']['text'] for match in results['matches']])
+retrieved_texts = tokenizer.decode(tokenizer(retrieved_texts, truncation=True, max_length=max_length)['input_ids'])
+
+prompt = f"Based on the information: {retrieved_texts}. Can you answer the question: '{query}'?"
+
+inputs = tokenizer(prompt, return_tensors="pt")
+outputs = modelg.generate(**inputs, max_length=400)
+response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+print(response)
+```
+
+### 12. **RAG Using Pinecone:**
+
+In this section, the system answers a user-defined question by querying the Pinecone index and generating a response using the model.
+
+```python
+
+import numpy as np
+teachme="how did Linnaeus group organisms?"
+query_embedding = pc.inference.embed(
+    model="multilingual-e5-large",
+    inputs=[teachme],
+    parameters={"input_type": "query"}
+)
+
+results = index_modelpine.query(
+    namespace="modelpine",
+    vector=query_embedding.data[0].values,
+    top_k=3,
+    include_values=False,
+    include_metadata=True
+)
+
+
+max_length=np.inf
+retrieved_texts = " ".join([match['metadata']['text'] for match in results['matches']])
+retrieved_texts = tokenizer.decode(tokenizer(retrieved_texts, truncation=False,max_length = max_length)['input_ids'])
+
+prompt = f"Based only on the information i give you here (do not search anywhere else): {retrieved_texts}. Can you display the question exactly as i give it to you and answer the question: '{teachme}'?"
+import textwrap
+print(textwrap.fill(prompt, width=80))
+```
+
+### 13. **RAG Using SentenceTransformer Model:**
+
+In this section, the system answers a user-defined question by querying the Pinecone index and generating a response using the model.
+
+```python
+teachme="how did Linnaeus group organisms?"
+query_embedding = model_st.encode([teachme]).tolist()
+
+# Search the index for the three most similar vectors
+results = index_modelst.query(
+    namespace="modelst",
+    vector=query_embedding[0],
+    top_k=3,
+    include_values=False,
+    include_metadata=True
+)
+
+max_length=300
+import numpy as np
+max_length=np.inf
+retrieved_texts = " ".join([match['metadata']['text'] for match in results['matches']])
+retrieved_texts = tokenizer.decode(tokenizer(retrieved_texts, truncation=False,max_length = max_length)['input_ids'])
+
+# Prepare the prompt with retrieved information
+prompt = f"Based only on the information i give you here (do not search anywhere else): {retrieved_texts}. Can you display the question exactly as i give it to you and answer the question: '{teachme}'?"
+import textwrap
+print(textwrap.fill(prompt, width=80))
+```
+
+This pipeline provides an efficient method for processing and querying large educational datasets using vector search and machine learning, enabling quick and accurate answers to specific questions.
