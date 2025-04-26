@@ -11,7 +11,7 @@ categories: jekyll update data
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
-#Inroduction
+# Inroduction
 
 Time series analysis is a crucial technique in understanding data that is indexed by time, such as stock prices, weather patterns, or agricultural outputs. In R, there are several ways to manipulate and analyze time series data. In this blog post, we'll walk through a basic example of time series analysis using a dataset from the <a href="https://github.com/FinYang/tsdl" target="_blank">`tsdl`</a> package. We'll cover how to subset, manipulate, and visualize time series data, focusing on essential functions in R for time series analysis. 
 
