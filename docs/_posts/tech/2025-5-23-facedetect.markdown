@@ -8,6 +8,9 @@ categories: jekyll update technology
 ">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
+
+![image tooltip here](/assets/images/facerecs.png){: width="500" }
+
 Facial recognition and landmark detection have become central to many applications ranging from biometric authentication to augmented reality. In this tutorial, we walk through a practical workflow using Python’s **`face_recognition`**, **Pillow**, and **Shapely** libraries to detect faces, extract facial landmarks, and analyze geometric structures of facial features.
 
 We also generate random synthetic faces for demonstration using the `thispersondoesnotexist.com` service.
