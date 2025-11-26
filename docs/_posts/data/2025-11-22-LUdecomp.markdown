@@ -1,0 +1,423 @@
+---
+layout: post
+title:  "Symbolic LU Decomposition with SymPy: A Step-by-Step Mathematical Guide"
+date:   2025-11-22 09:25:17 -0800
+categories: jekyll update data
+---
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Symbolic_LU_Decomposition_with_SymPy_A_Step_by_Step_Mathematical_Guide.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+$$
+A = \underbrace{E_1^{-1} E_2^{-1} \cdots E_6^{-1}}_{\displaystyle L} 
+\underbrace{E_6 E_5 \cdots E_1 A}_{\displaystyle U}, 
+\quad \text{with} \quad
+A^{-1} = U^{-1} L^{-1}.
+$$
+
+
+## **Introduction**
+
+We present a comprehensive exploration of **symbolic LU decomposition**. The objective is to deliver a **precise and structured explanation** of each stage of the decomposition process, emphasizing both the mathematical principles and their symbolic implementation.
+
+Throughout this blog, readers will encounter:
+
+* The introduction and manipulation of **symbolic variables** with detailed derivations
+* **Step-by-step elimination procedures** for matrix transformation
+* Construction of **elementary matrices** in exact symbolic form
+* Well-structured **mathematical equation blocks** for clarity
+* Commentary that guides the reader through the corresponding **Python/SymPy code**
+
+This tutorial serves as a methodical guide through the mechanics of LU decomposition — beginning with the raw matrix entries, progressing through the construction of the lower and upper triangular matrices $$ L $$ and $$ U $$, and culminating in the symbolic computation of the matrix inverse $$A^{-1} $$.
+
+
+## **Section 1 — Matrix Initialization**
+
+We begin with general notation. A square matrix of order $$ n $$ is:
+
+$$
+A = \begin{bmatrix}
+a_{11} & a_{12} & \cdots & a_{1n} \\
+a_{21} & a_{22} & \cdots & a_{2n} \\
+\vdots & \vdots & \ddots & \vdots \\
+a_{n1} & a_{n2} & \cdots & a_{nn}
+\end{bmatrix}.
+$$
+
+
+For our working example:
+
+$$
+A \in \mathbb{Q}^{4\times 4}.
+$$
+
+We now initialize $$ A $$ and $$ b $$ using exact rational arithmetic.
+
+```python
+from sympy import Matrix, Rational, init_printing, symbols,latex, simplify
+from IPython.display import display, Math
+# Enable pretty printing
+init_printing()
+
+
+# --- Define A and b ---
+
+A = Matrix([
+    [4,   1, -2,  3],
+    [8,   5, -1,  7],
+    [-2,  4,  6, -3],
+    [3,  -7,  2,  5]
+])
+
+b = Matrix([9, 23, -4, 12])
+
+display(A, b)
+```
+
+This sets the stage for column-by-column elimination.
+
+---
+
+## **Section 2 — Column-1 Elimination Multipliers**
+
+To remove entries beneath the first pivot, we compute:
+
+$$
+m_{i1} = \frac{a^{(0)}*{i1}}{a^{(0)}*{11}}, \qquad i=2,3,4.
+$$
+
+Explicitly:
+
+$$
+m_{21} = \frac{A_{21}}{A_{11}}, \qquad
+m_{31} = \frac{A_{31}}{A_{11}}, \qquad
+m_{41} = \frac{A_{41}}{A_{11}}.
+$$
+
+```python
+#Multipliers for column 1
+m21 = Rational(A[1,0], A[0,0])   
+m31 = Rational(A[2,0], A[0,0])   
+m41 = Rational(A[3,0], A[0,0])  
+
+display(Math(r"m_{21}=" + latex(m21) + r",\quad m_{31}=" + latex(m31) + r",\quad m_{41}=" + latex(m41)))
+```
+
+These correspond to the row operations:
+
+$$
+R_2 \leftarrow R_2 - m_{21} R_1, \qquad
+R_3 \leftarrow R_3 - m_{31} R_1, \qquad
+R_4 \leftarrow R_4 - m_{41} R_1.
+$$
+
+---
+
+## **Section 3 — Elementary Matrices for First Elimination Stage**
+
+Each elimination is encoded symbolically using lower-triangular elementary matrices.
+
+```python
+# Elementary matrices
+E1 = Matrix([
+    [1, 0, 0, 0],
+    [-m21, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1]
+])
+display(Math(r"E_1=" + latex(E1)))
+
+E2 = Matrix([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [-m31, 0, 1, 0],
+    [0, 0, 0, 1]
+])
+display(Math(r"E_2=" + latex(E2)))
+
+E3 = Matrix([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [-m41, 0, 0, 1]
+])
+display(Math(r"E_3=" + latex(E3)))
+```
+
+Because each $$ E_k $$ has determinant 1, we later recover $$ L = E^{-1} $$ easily.
+
+---
+
+## **Section 4 — Apply First Elimination Stage**
+
+```python
+# Apply transformations for step 1
+M1 = simplify(E3 * E2 * E1)
+A1 = simplify(M1 * A)
+b1 = simplify(M1 * b)
+
+display(Math(r"M_1 = E_3 E_2 E_1 = " + latex(M1)))
+display(Math(r"A^{(1)} = M_1 A = " + latex(A1)))
+display(Math(r"b^{(1)} = M_1 b = " + latex(b1)))
+```
+
+After this transformation, the matrix takes the form:
+
+$$
+A^{(1)} =
+\begin{bmatrix}
+u_{11} & u_{12} & u_{13} & u_{14} \\
+0      & \alpha_{22} & \alpha_{23} & \alpha_{24} \\
+0      & \beta_{22} & \beta_{23} & \beta_{24} \\
+0      & \gamma_{22} & \gamma_{23} & \gamma_{24}
+\end{bmatrix}.
+$$
+
+
+---
+
+## **Section 5 — Column-2 Elimination**
+
+We compute the next pair of multipliers:
+
+```python
+# Multipliers for column 2
+m32 = Rational(A1[2,1], A1[1,1])   
+m42 = Rational(A1[3,1], A1[1,1])   
+display(Math(r"m_{32}=" + latex(m32) + r",\quad m_{42}=" + latex(m42)))
+```
+
+These achieve:
+
+$$
+R_3 \leftarrow R_3 - m_{32} R_2, \qquad
+R_4 \leftarrow R_4 - m_{42} R_2.
+$$
+
+### Step-2 Elementary Matrices
+
+```python
+E4 = Matrix([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, -m32, 1, 0],
+    [0, 0, 0, 1]
+])
+display(Math(r"E_4=" + latex(E4)))
+
+E5 = Matrix([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, -m42, 0, 1]
+])
+display(Math(r"E_5=" + latex(E5)))
+```
+
+### Apply Step-2 Elimination
+
+```python
+# Apply transformations for step 2
+M2 = simplify(E5 * E4)
+A2 = simplify(M2 * A1)
+b2 = simplify(M2 * b1)
+display(Math(r"M_2 = E_5 E_4 = " + latex(M2)))
+display(Math(r"A^{(2)} = M_2 A^{(1)} = " + latex(A2)))
+display(Math(r"b^{(2)} = M_2 b^{(1)} = " + latex(b2)))
+```
+
+The matrix is now:
+
+$$
+A^{(2)} =
+\begin{bmatrix}
+u_{11} & u_{12} & u_{13} & u_{14} \\
+0      & u_{22} & u_{23} & u_{24} \\
+0      & 0      & \delta_{33} & \delta_{34} \\
+0      & 0      & \epsilon_{33} & \epsilon_{34}
+\end{bmatrix}.
+$$
+
+
+---
+
+## **Section 6 — Column-3 Elimination**
+
+```python
+m43 = Rational(A2[3,2], A2[2,2])  
+display(Math(r"m_{43}=" + latex(m43)))
+
+E6 = Matrix([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, -m43, 1]
+])
+display(Math(r"E_6=" + latex(E6)))
+```
+
+---
+
+## **Section 7 — Apply Final Elimination and Obtain ( U )**
+
+```python
+M3 = E6
+A3 = simplify(M3 * A2)
+b3 = simplify(M3 * b2)
+
+display(Math(r"M_3 = E_6 = " + latex(M3)))
+display(Math(r"A^{(3)} = M_3 A^{(2)} = U = " + latex(A3)))
+display(Math(r"b^{(3)} = M_3 b^{(2)} = " + latex(b3)))
+```
+
+Thus:
+
+$$
+U =
+\begin{bmatrix}
+u_{11} & u_{12} & u_{13} & u_{14} \\
+0      & u_{22} & u_{23} & u_{24} \\
+0      & 0      & u_{33} & u_{34} \\
+0      & 0      & 0      & u_{44}
+\end{bmatrix}.
+$$
+
+
+---
+
+## **Section 7 — Constructing $$ L $$ and Verifying $$ A = L U $$**
+
+```python
+E_total = simplify(M3 * M2 * M1)
+L = simplify(E_total.inv())
+L
+
+
+U = simplify(A3)
+U
+
+display(Math(r"E = M_3 M_2 M_1 = " + latex(E_total)))
+display(Math(r"L = E^{-1} = " + latex(L)))
+display(Math(r"U = A^{(3)} =" + latex(U)))
+display(Math(r"A = L U = " + latex(L*U)))
+```
+
+The symbolic structure of ( L ) matches:
+
+$$
+L =
+\begin{bmatrix}
+1      & 0      & 0      & 0 \\
+m_{21} & 1      & 0      & 0 \\
+m_{31} & m_{32} & 1      & 0 \\
+m_{41} & m_{42} & m_{43} & 1
+\end{bmatrix}.
+$$
+
+
+---
+
+## **Section 8 — Computing $$ A^{-1} $$ Using LU**
+
+```python
+from IPython.display import display, Math
+# 1. A = LU
+display(Math(r"A = L\,U"))
+
+# 2. To compute A^{-1}, solve A X = I
+display(Math(r"A\,X = I"))
+
+# 3. Since A = LU, substitute:
+display(Math(r"L\,U\,X = I"))
+
+# 4. Define Y by U X = Y
+display(Math(r"U\,X = Y"))
+
+# 5. So we first solve L Y = I
+display(Math(r"L\,Y = I"))
+
+# 6. Then solve U X = Y to obtain A^{-1}
+display(Math(r"A^{-1} = X"))
+```
+
+---
+
+## **Section 9 — Forward and Backward Substitution**
+
+```python
+from sympy import Matrix, symbols, simplify, latex
+from IPython.display import display, Math
+
+n = L.rows
+I = Matrix.eye(n)  # Identity matrix
+display(Math(r"I = " + latex(I)))
+
+# --- Step 1: Forward substitution L Y = I ---
+Y = L.LUsolve(I)
+display(Math(r"L \, Y = I"))
+display(Math(r"Y = " + latex(Y)))
+
+# --- Step 2: Backward substitution U X = Y ---
+A_inv = U.LUsolve(Y)
+display(Math(r"U \, X = Y"))
+display(Math(r"A^{-1} = X = " + latex(A_inv)))
+
+# --- Step 3: Simplify the result ---
+A_inv = simplify(A_inv)
+display(Math(r"\text{Simplified } A^{-1} = " + latex(A_inv)))
+```
+
+Forward substitution pattern:
+
+$$
+\begin{aligned}
+y_{11} &= 1, \\
+y_{21} &= -m_{21}, \\
+y_{31} &= -m_{31} + m_{32} m_{21}, \\
+y_{41} &= -m_{41} + m_{42} m_{21} + m_{43} m_{31} - m_{43} m_{32} m_{21}.
+\end{aligned}
+$$
+
+
+---
+
+## **Section 10 — Verification of the Inverse**
+
+```python
+A
+
+A_inv
+
+A_inv*A
+
+A*A_inv
+```
+
+We confirm both products equal:
+
+$$
+I_4 =
+\begin{bmatrix}
+1 & 0 & 0 & 0 \\
+0 & 1 & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1
+\end{bmatrix}.
+$$
+
+
+---
+
+## **Conclusion**
+
+In this enhanced technical walkthrough, we:
+
+* Performed symbolic LU decomposition step-by-step
+* Constructed all elementary matrices
+* Derived $$ L $$ and $$ U $$ explicitly
+* Computed $$ A^{-1} $$ using substitution
+* Verified the results algebraically
+
+The entire pipeline is powered by exact rational arithmetic and provides a fully traceable computation path.
+
