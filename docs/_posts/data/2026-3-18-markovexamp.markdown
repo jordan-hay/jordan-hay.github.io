@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Representative Markov Chain Examples"
-date:   2026-03-18 09:25:17 -0800
+date:   2026-3-18 09:25:17 -0800
 categories: jekyll update data
 ---
 <a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Representative_Markov_Chain_Examples.ipynb

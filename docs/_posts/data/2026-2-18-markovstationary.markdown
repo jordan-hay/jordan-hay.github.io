@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Understanding the Stationary Distribution in Markov Chains"
-date:   2026-02-18 09:25:17 -0800
+date:   2026-2-18 09:25:17 -0800
 categories: jekyll update data
 ---
 <a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Understanding_the_Stationary_Distribution_in_Markov_Chains.ipynb
