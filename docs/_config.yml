@@ -21,6 +21,10 @@ copyright: Jordan Hay LLC
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-scholar
+
+scholar:
+  bibliography: references.bib
 
 # Theme-specific settings
 
