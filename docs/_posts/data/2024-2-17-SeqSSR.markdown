@@ -164,6 +164,7 @@ Compute the overall F-statistic for comparing the full and reduced models:
 F^*=\left( \dfrac{SSR(F)-SSR(R)}{df_R-df_F}\\right)\div\left( \dfrac{SSE(F)}{df_F}\right)
 \\)
 
+{% raw %}
 ```python
 SSRF = np.sum((ols('y ~ X1 + X2 + X3', data=df).fit().fittedvalues - y_bar)**2)
 SSRR = np.sum((ols('y ~ X1', data=df
@@ -177,6 +178,7 @@ df_reduced = df_full + 2
 Fstar = \frac{{(SSRF - SSRR)}}{{(df_reduced - df_full)}} \div \frac{{SSEF}}{{df_full}}
 p_value = 1 - F.cdf(Fstar, df_reduced - df_full, df_full)
 ```
+{% endraw %}
 
 This statistic allows us to compare the full and reduced models and assess whether the inclusion of additional variables significantly improves model fit.
 
