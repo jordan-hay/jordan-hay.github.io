@@ -38,4 +38,4 @@ gem 'csv', '~> 3.2'
 gem 'base64', '~> 0.1.0'
 gem 'bigdecimal', '~> 3.1'
 
-gem "jekyll-scholar", "~> 7.3"
+
