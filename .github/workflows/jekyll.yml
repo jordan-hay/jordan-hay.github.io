@@ -22,8 +22,10 @@ jobs:
           bundler-cache: true
 
       - run: bundle install
+      working-directory: ./docs
 
       - run: bundle exec jekyll build
+      working-directory: ./docs
 
       - uses: actions/upload-pages-artifact@v3
         with:
