@@ -1013,4 +1013,4 @@ The repeated structure makes the code easy to compare across the five linearizat
 
 # References
 
-{% bibliography %}
+{% bibliography --cited %}
