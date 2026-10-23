@@ -1,0 +1,489 @@
+---
+layout: post
+title:  "Exploring UNESCO World Heritage Sites with Tableau: Data Analysis and Python Validation"
+date:   2026-10-13 09:25:17 -0800
+categories: jekyll update data
+---
+
+<a target="_blank" href="https://colab.research.google.com/github/jordan-hay/jordan-hay.github.io/blob/main/docs/assets/Exploring_UNESCO_World_Heritage_Sites_with_Tableau.ipynb
+">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+## Introduction
+
+UNESCO World Heritage Sites {% cite unesco_world_heritage %} represent some of the world's most significant cultural and natural landmarks. These sites vary in their characteristics, geographical distribution, conservation status, and physical area.
+
+In this project, we use Tableau to explore UNESCO World Heritage data and answer several questions: How are sites distributed across heritage categories? How does endangered status vary by category? Which country labels have the most listed sites and the largest total heritage areas? And how do the sizes of World Heritage Sites in France compare?
+
+The analysis consists of six visualizations, moving from global comparisons to a more detailed examination of France. Python is used to retrieve and prepare the data and to validate the results, while **Tableau is the main tool for building and exploring the visualizations**.
+
+## 1. Getting and Preparing the UNESCO Data
+
+The dataset comes from UNESCO's open data platform.
+
+**Source:** [UNESCO World Heritage Dataset](https://data.unesco.org/api/explore/v2.1/catalog/datasets/whc001/exports/csv?lang=en&timezone=UTC)
+
+We begin by downloading the dataset using Python.
+
+```python
+import pandas as pd
+import numpy as np
+
+url = "https://data.unesco.org/api/explore/v2.1/catalog/datasets/whc001/exports/csv?lang=en&timezone=UTC"
+
+df = pd.read_csv(url, sep=";")
+```
+
+The dataset contains information about heritage sites, including their names, country associations, categories, area measurements, and descriptions.
+
+We prepare the relevant fields for Tableau.
+
+```python
+df = df.rename(columns={
+    "name_en": "Name",
+    "states_names": "Country",
+    "category": "Category",
+    "area_hectares": "Area Hectares",
+    "short_description_en": "Short Description"
+})
+
+df["Category"] = df["Category"].str.title()
+df["Area Hectares"] = pd.to_numeric(
+    df["Area Hectares"], errors="coerce"
+)
+
+danger_col = "danger_list" if "danger_list" in df.columns else "danger"
+
+def is_endangered(x):
+    if pd.isna(x):
+        return False
+    if isinstance(x, (bool, np.bool_)):
+        return bool(x)
+    if isinstance(x, (int, float, np.number)):
+        return x != 0
+    return str(x).strip().lower() not in {
+        "", "false", "no", "none", "null", "nan",
+        "0", "not endangered", "not on danger list"
+    }
+
+df["Danger Status"] = np.where(
+    df[danger_col].map(is_endangered),
+    "Endangered", "Not endangered"
+)
+
+df.to_csv("unesco_heritage.csv", index=False)
+```
+
+The danger-status conversion follows the supplied Python workflow. The raw values should be checked against UNESCO's field definitions before treating the classification as definitive.
+
+### Importing into Tableau
+
+Open Tableau Desktop or Tableau Public, select **Connect → Text File**, and import `unesco_heritage.csv`.
+
+Verify that `Name`, `Country`, `Category`, and `Danger Status` are text fields and that `Area Hectares` is numeric.
+
+We can now begin the analysis.
+
+---
+
+## 2. Number of World Heritage Sites per Category
+
+Our first visualization examines the number of World Heritage Sites belonging to each UNESCO category: Cultural, Natural, and Mixed.
+
+This provides a basic understanding of the composition of the World Heritage List.
+
+### Creating the chart in Tableau
+
+1. Create a worksheet named **Number of Sites per Category**.
+2. Drag `Category` to Columns.
+3. Drag `Name` to Rows and select `COUNT`.
+4. Select Bar from the Marks card.
+5. Drag `Category` to Color.
+6. Enable Show Mark Labels.
+
+Use blue for Cultural, orange for Natural, and green for Mixed to match the original Plotly visualization.
+
+### Analyzing the chart
+
+This chart allows us to identify which heritage category contains the largest number of listed properties.
+
+It also establishes an important baseline for later comparisons. Categories with more sites may naturally have more endangered sites in absolute terms.
+
+Consequently, the distribution of categories should be considered when interpreting conservation-status patterns.
+
+### Python validation
+
+```python
+print(df["Category"].value_counts())
+```
+
+The counts should match the Tableau bars.
+
+---
+
+## 3. Endangered World Heritage Sites: Stacked Bar Chart
+
+The second visualization compares endangered and non-endangered World Heritage Sites within each category.
+
+A stacked bar chart is useful because it shows both the total number of sites and how that total is divided by danger status.
+
+### Creating the chart in Tableau
+
+1. Create a worksheet named **Endangered Sites — Stacked**.
+2. Drag `Category` to Columns.
+3. Drag `Name` to Rows and select `COUNT`.
+4. Drag `Danger Status` to Color.
+5. Select Bar from the Marks card.
+6. Choose **Analysis → Stack Marks → On**.
+7. Enable data labels.
+
+Use red for Endangered and muted blue for Not endangered, consistent with the original Plotly chart.
+
+### Analyzing the chart
+
+The stacked bars show the contribution of endangered and non-endangered sites to each category's total.
+
+This makes it possible to compare the absolute number of endangered sites while retaining the context of overall category size.
+
+However, the stacked chart has a limitation: it is not always easy to compare the smaller segments across categories, particularly when the category totals differ substantially.
+
+This motivates the next visualization.
+
+### Python validation
+
+```python
+print(
+    df.groupby(["Category", "Danger Status"])
+      .size()
+)
+```
+
+The results should match the counts represented by each stacked segment in Tableau.
+
+---
+
+## 4. Endangered World Heritage Sites: Side-by-Side Bar Chart
+
+The third visualization uses the same data as the stacked bar chart but displays endangered and non-endangered counts next to each other.
+
+The difference is in how the comparison is presented.
+
+### Creating the chart in Tableau
+
+1. Create a worksheet named **Endangered Sites — Side by Side**.
+2. Drag `Category` to Columns.
+3. Drag `Danger Status` to Columns, after `Category`.
+4. Drag `Name` to Rows and select `COUNT`.
+5. Drag `Danger Status` to Color.
+6. Select Bar marks and enable labels.
+
+This produces two adjacent bars for each heritage category.
+
+### Analyzing the chart
+
+The side-by-side arrangement makes the difference between endangered and non-endangered counts easier to see.
+
+Unlike the stacked chart, the bars share a common baseline, making comparisons more straightforward.
+
+The two visualizations therefore serve complementary purposes.
+
+The stacked chart emphasizes the composition of each category, while the side-by-side chart emphasizes the difference between danger-status groups.
+
+Both use the same underlying data, so their numerical results should be identical.
+
+### Python validation
+
+The same grouped count from the previous section validates this chart:
+
+```python
+print(
+    pd.crosstab(df["Category"], df["Danger Status"])
+)
+```
+
+This also provides a convenient table for comparing the two visualizations.
+
+---
+
+## 5. Number of World Heritage Sites per Country
+
+After examining heritage categories and endangered status, the analysis shifts to geographical distribution.
+
+The fourth visualization identifies the top 20 country labels by number of World Heritage Sites.
+
+This helps us understand where UNESCO-listed properties are concentrated within the dataset.
+
+### Creating the chart in Tableau
+
+1. Create a worksheet named **Top 20 Countries by Number of Sites**.
+2. Drag `Country` to Rows.
+3. Drag `Name` to Columns and select `COUNT`.
+4. Select Bar marks.
+5. Sort by site count in descending order.
+6. Drag `Country` to Filters and exclude blank values.
+7. Apply a Top filter to display the top 20 country labels by `COUNT(Name)`.
+8. Enable data labels.
+
+A horizontal bar chart is appropriate because country labels can be relatively long.
+
+### Analyzing the chart
+
+The chart ranks country labels according to the number of UNESCO World Heritage properties associated with them.
+
+This provides a geographical perspective on the distribution of listed heritage.
+
+However, an important detail concerns multinational properties.
+
+Some World Heritage Sites are associated with more than one country. In this analysis, the original UNESCO `states_names` value is retained as a single label rather than splitting multinational properties into separate country records.
+
+As a result, the chart ranks the country labels recorded in the dataset, not necessarily the total number of properties in which each individual country participates.
+
+This distinction matters when interpreting the rankings.
+
+### Python validation
+
+```python
+print(
+    df[df["Country"] != ""]
+      .groupby("Country")
+      .size()
+      .nlargest(20)
+)
+```
+
+Compare the country labels and counts with the Tableau chart.
+
+---
+
+## 6. Total Heritage Area per Country
+
+The fifth visualization examines geographical distribution from a different perspective.
+
+Instead of counting World Heritage Sites, we calculate the total reported area associated with each country label.
+
+This distinction is important because the number of sites and their combined physical area measure different characteristics.
+
+A country label may have many relatively small heritage properties, while another may have fewer but much larger sites.
+
+### Creating the chart in Tableau
+
+1. Create a worksheet named **Top 20 Countries by Heritage Area**.
+2. Drag `Country` to Rows.
+3. Drag `Area Hectares` to Columns.
+4. Set the aggregation to `SUM`.
+5. Exclude blank country labels.
+6. Exclude country labels with no nonmissing area values.
+7. Apply a Top filter to display the 20 country labels with the largest `SUM(Area Hectares)`.
+8. Sort in descending order and use horizontal bars.
+
+Format the area values with thousands separators and label the horizontal axis **Total Area (hectares)**.
+
+### Analyzing the chart
+
+This chart highlights the difference between heritage-site counts and total heritage area.
+
+A country label appearing near the top of the site-count ranking does not necessarily appear near the top of the area ranking.
+
+Large natural properties may contribute substantially to total area, while numerous cultural properties may occupy relatively small areas.
+
+The chart therefore adds another dimension to the geographical analysis.
+
+There are two important limitations.
+
+First, missing area values are excluded from the sum. Consequently, the chart represents total *reported* area, which may differ from the complete area of all properties associated with a country label.
+
+Second, multinational sites retain their original combined country label. The full area of such a property is not allocated separately among participating countries.
+
+### Python validation
+
+```python
+print(
+    df[df["Country"] != ""]
+      .groupby("Country")["Area Hectares"]
+      .sum(min_count=1)
+      .dropna()
+      .nlargest(20)
+)
+```
+
+This reproduces the aggregation and ranking used in the original Plotly chart.
+
+---
+
+## 7. World Heritage Sites in France: Area on a Logarithmic Scale
+
+The final visualization takes a closer look at World Heritage Sites associated with France.
+
+Unlike the earlier global comparisons, this analysis examines individual sites and their physical areas.
+
+The chart includes Cultural and Natural sites with positive reported areas and uses a logarithmic horizontal axis.
+
+### Why use a logarithmic scale?
+
+The area of World Heritage Sites can vary enormously.
+
+Some properties may occupy relatively small spaces, while others extend across extensive landscapes or marine environments.
+
+On a standard linear scale, very large sites can dominate the chart, making smaller sites difficult to compare.
+
+A logarithmic scale compresses large values while preserving their relative order, allowing sites with very different areas to be displayed more clearly.
+
+### Preparing the France analysis in Tableau
+
+Create a worksheet named **France Heritage Sites — Log Area**.
+
+First, filter the dataset:
+
+1. Drag `Country` to Filters and choose the condition **Contains → France**.
+2. Drag `Category` to Filters and select Cultural and Natural.
+3. Drag `Area Hectares` to Filters and retain strictly positive values.
+
+The Country filter should use the text *contains France*, rather than an exact match, to retain multinational country labels containing France.
+
+### Creating the chart
+
+1. Drag `Name` to Rows.
+2. Drag `Area Hectares` to Columns and use `SUM`.
+3. Select Bar marks.
+4. Drag `Category` to Color.
+5. Sort sites by area from largest to smallest.
+6. Right-click the horizontal axis and select **Edit Axis → Logarithmic**.
+7. Drag `Short Description`, `Country`, and `Area Hectares` to Tooltip.
+
+Use blue for Cultural and orange for Natural, matching the original Plotly chart.
+
+### Analyzing the chart
+
+This visualization provides a detailed comparison of the physical areas of France-associated World Heritage Sites.
+
+The logarithmic axis makes it easier to examine properties across a wide range of sizes.
+
+It also highlights differences between cultural and natural heritage properties without allowing the largest sites to dominate the entire visualization.
+
+However, logarithmic scales require careful interpretation. Equal distances on the axis represent equal ratios rather than equal differences in hectares.
+
+For example, the visual distance between 100 and 1,000 hectares is the same as the distance between 1,000 and 10,000 hectares.
+
+The chart also excludes Mixed sites and records with zero, negative, or missing area values. These exclusions should be documented because they affect which properties appear in the visualization.
+
+### Python validation
+
+```python
+france_all = df[
+    df["Country"].str.contains(
+        r"\bFrance\b", case=False, na=False
+    )
+]
+
+france = france_all[
+    (france_all["Area Hectares"] > 0) &
+    (france_all["Category"].isin(["Cultural", "Natural"]))
+]
+
+print("France-associated sites:", len(france_all))
+print("Plotted sites:", len(france))
+print("Excluded sites:", len(france_all) - len(france))
+```
+
+The number of plotted records and the reported areas should match the Tableau visualization.
+
+---
+
+## 8. Bringing the Analysis Together in Tableau
+
+The six charts provide complementary perspectives on the UNESCO World Heritage dataset.
+
+| Chart | Main analytical question |
+|---|---|
+| Sites per Category | How are World Heritage Sites distributed across categories? |
+| Stacked Endangered Chart | How are endangered and non-endangered counts distributed within categories? |
+| Side-by-Side Endangered Chart | How do danger-status counts compare directly? |
+| Sites per Country | Which country labels have the most listed sites? |
+| Heritage Area per Country | Which country labels have the largest total reported heritage area? |
+| France Heritage Area | How do the areas of individual France-associated sites compare? |
+
+These visualizations can be organized into a Tableau dashboard with two levels of analysis.
+
+The first level focuses on global patterns, including category distribution, endangered status, country-label rankings, and total area.
+
+The second level provides a more detailed examination of individual World Heritage Sites in France.
+
+### Adding dashboard interactions
+
+Filters can be added for `Category` and `Danger Status`, allowing users to explore different subsets of the data.
+
+For the global views, category selection can update the site counts and country rankings.
+
+The France chart can remain a dedicated detailed view with its own filters.
+
+Use consistent colors, clear axis labels, and informative tooltips to maintain readability across the dashboard.
+
+## 9. Validating the Results with Python
+
+Although Tableau is responsible for the visualizations, Python provides an independent way to confirm the calculations.
+
+The following short validation script summarizes the main measures used throughout the analysis.
+
+```python
+print("Sites by category:")
+print(df["Category"].value_counts())
+
+print("\nDanger status by category:")
+print(pd.crosstab(df["Category"], df["Danger Status"]))
+
+print("\nTop 20 country labels by site count:")
+print(
+    df[df["Country"] != ""]
+      .groupby("Country").size().nlargest(20)
+)
+
+print("\nTop 20 country labels by area:")
+print(
+    df[df["Country"] != ""]
+      .groupby("Country")["Area Hectares"]
+      .sum(min_count=1).dropna().nlargest(20)
+)
+
+print("\nFrance plotted sites:", len(france))
+```
+
+The validation process ensures that the Tableau visualizations use the intended aggregations and filters.
+
+If results differ, review the treatment of missing values, country labels, category filters, and aggregation settings.
+
+## Conclusion
+
+This project demonstrates how Tableau can be used to explore UNESCO World Heritage data through six complementary visualizations.
+
+The analysis begins by examining the composition of the World Heritage List across Cultural, Natural, and Mixed categories. It then compares endangered and non-endangered sites using stacked and side-by-side bar charts.
+
+The geographical analysis identifies the country labels associated with the greatest number of listed sites and the largest total reported heritage areas.
+
+Finally, the France-focused logarithmic bar chart provides a more detailed view of the differences in physical size among individual heritage properties.
+
+Together, these analyses demonstrate why different visualizations are useful for different analytical questions.
+
+**Counts reveal frequency, stacked bars show composition, grouped bars support direct comparisons, country rankings highlight geographical patterns, and logarithmic scales help visualize highly variable measurements.**
+
+Python supports the workflow through data preparation and lightweight validation, while Tableau provides the primary environment for interactive exploration and communicating the results.
+
+The result is a reproducible analytical approach that can be applied to other open datasets involving categorical distributions, geographical comparisons, conservation indicators, and measurements that vary across large numerical ranges.
+
+---
+
+## Appendix: Tableau Implementation Summary
+
+| Plotly chart | Tableau setup |
+|---|---|
+| NumberOfSitesPerCategory | Category → Columns; COUNT(Name) → Rows; Category → Color |
+| StackedChartOfEndangeredSites | Category → Columns; COUNT(Name) → Rows; Danger Status → Color; Stack Marks On |
+| SideBySideOfEndangeredSites | Category + Danger Status → Columns; COUNT(Name) → Rows |
+| NumberOfHeritageSitesPerCountry | Country → Rows; COUNT(Name) → Columns; Top 20 filter |
+| HeritageAreaPerCountry | Country → Rows; SUM(Area Hectares) → Columns; Top 20 filter |
+| Heritage Sites in France | Name → Rows; SUM(Area Hectares) → Columns; logarithmic axis; France, category, and positive-area filters |
+
+## References
+
+{% bibliography --cited %}
+
+
